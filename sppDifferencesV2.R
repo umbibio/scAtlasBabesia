@@ -362,7 +362,7 @@ markers.int.local.sig.specific.df <- markers.int.local.sig.specific %>% dplyr::s
 markers.int.local.sig.stats <- markers.int.local.sig.specific.df %>% group_by(phase, ref.spp) %>% 
   summarise(genes = list(GeneID), num.deg = n())
 
-#saveRDS(markers.int.local.sig.stats, "../Input/compScBabesia/RData/spp_specific_unique_markers_fc_1_5_rev.RData")
+
 markers.int.local.sig.stats$phase <- factor(markers.int.local.sig.stats$phase, levels = c('G', 'SM', 'MC', 'C'))
 
 tmp <- unlist(markers.int.local.sig.stats$genes[markers.int.local.sig.stats$ref.spp == "Bdiv_human" & markers.int.local.sig.stats$phase=="C"])
@@ -408,18 +408,12 @@ ggsave(filename="../Output/compScBabsSpecies/figs/cross_spp_uniq_phase_based_mar
 )
 
 
-# p <- FeaturePlot(object = S.O.integrated, features = markers.int.local.top$gene[3], label = T,repel = T,
-#                  #shape.by  = 'spp',
-#                  split.by = 'spp',
-#                  cols = c("grey", "blue"), reduction = "pca")
-# 
-# plot(p)
 
 # table to do GO term
 
 cross.spp.phase.based <- markers.int.local.sig.specific.df %>% group_by(phase, ref.spp) %>% na.omit() %>%
   summarise(genes = list(GeneID_Toxo), num.deg = n())
-#write.xlsx(cross.spp.phase.based, "../Input/compScBabesia/GO/cross_spp_phase_based_markers/cross_spp_uniq_phase_based_markers_TGGT1_orth_summarized.xlsx")
+
 write.xlsx(cross.spp.phase.based, "../Output/compScBabsSpecies/tables/cross_spp_phase_based_markers_TGGT1_orth_summarized_1_5_fc_rev.xlsx")
 
 
@@ -472,14 +466,7 @@ cons.markers.phases.sig.cc.stat <- cons.markers.phases.sig.cc %>% group_by(phase
   summarise(genes = list(GeneID), num.deg = n())
 
 cons.markers.phases.sig.cc.stat$phase <- factor(cons.markers.phases.sig.cc.stat$phase, levels = c('G', 'SM', 'MC', 'C'))
-# 
-# SM: "#c44237"
-# 
-# MC: "#ad8842"
-# 
-# G: "#1b5878"
-# 
-# C: "#e99093"
+
 
 p <-  ggplot(cons.markers.phases.sig.cc.stat, aes(x=num.deg, y=phase, fill = phase)) +
   geom_bar(stat="identity")+
@@ -595,8 +582,6 @@ for(i in 1:length(titles)){
 
 
 all.sc.tc.mus.scale <- do.call("rbind", sc.tc.mus.scale)
-#all.sc.tc.mus.scale.com <- all.sc.tc.mus.scale %>% filter(GeneID %in% com.genes)
-#all.sc.tc.mus.scale.com <- all.sc.tc.mus.scale %>% filter(GeneID %in% conserved.genes)
 
 # get  the order of Bdiv human to  order the genes 
 Bdiv_hum <- all.sc.tc.mus.scale %>% filter(spp == "Bdiv_human") %>% dplyr::select(GeneID, peak.ord) %>% distinct()
@@ -618,7 +603,6 @@ p <- ggplot(all.sc.tc.mus.scale, aes(x = aug.time, reorder(GeneID, -bdiv_peak.or
   scale_fill_gradientn(colours = viridis::inferno(10)) +
   theme(
     axis.text.x = element_blank(),
-    #axis.text.y = element_text(size = 10),
     axis.text.y = element_blank(),
     axis.ticks = element_blank(),
     axis.title.x = element_text(size = 16, face = "bold"),
@@ -647,7 +631,7 @@ ggsave(filename="../Output/compScBabsSpecies/figs/gene_cluster_curves_common_con
 
 ################################################################
 ## second approach of finding conserved and spp specific markers
-## looking at the iintersection and differences 
+## looking at the intersection and differences 
 
 
 markers.sig <- readRDS('../Input/compScBabesia/RData/all.markers.sig.cell.cycle.phase.RData')
@@ -675,7 +659,6 @@ p <- ggplot(all.markers.sig.stat, aes(x=phase, y=num.deg, fill = phase, color = 
   theme_bw()+
   theme(
     axis.text.x = element_blank(),
-    #axis.text.y = element_text(size = 10),
     axis.text.y = element_blank(),
     axis.ticks = element_blank(),
     axis.title.x = element_text(size = 24, face = "bold"),
@@ -688,14 +671,13 @@ p <- ggplot(all.markers.sig.stat, aes(x=phase, y=num.deg, fill = phase, color = 
         axis.title.y = element_text(size=22, face="bold"))+
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        #panel.border = element_blank(),
         panel.spacing = unit(0.5, "lines"),
         strip.text = element_text(face = "bold", size = 24,  angle = 0), 
         strip.placement = "outside") +
   theme(legend.text = element_text(face = "bold", size = 10),
         legend.title = element_text(face = "bold", size = 14))+
   theme(panel.spacing = unit(1.5, "lines")) 
-#theme(legend.position = "none")
+
 
 p
 
@@ -704,7 +686,7 @@ all.markers <- all.markers.sig %>% group_by(spp, phase) %>% summarise(genes = li
   group_by(phase) %>% 
   mutate(intersect = list(reduce(genes, intersect))) %>% ungroup() %>% mutate(intersect.length = lengths(intersect))
 
-########3 shared markers in phases across all spp
+######## shared markers in phases across all spp
 
 all.markers.shared.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(genes = list(GeneID), total = n()) %>%
   group_by(phase) %>% 
@@ -751,7 +733,6 @@ ggsave(filename="../Output/compScBabsSpecies/figs/spp_specific_markers_shared.pn
 ####### speciesiec specific markers in each phase subtracting the interct 
 
 
-
 all.markers.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(genes = list(GeneID), total = n())
 
 XX <- full_join(all.markers.stat, all.markers.shared.stat, by = "phase")
@@ -763,10 +744,7 @@ spp.specific.markers <- XX.diff %>% select(spp, phase, spp.genes,num.spp.genes)
 spp.specific.markers$phase <- factor(spp.specific.markers$phase, levels = c('G', 'SM', 'MC', 'C'))
 
 write.xlsx(spp.specific.markers, "../Output/compScBabsSpecies/tables/spp_specific_markers_set_diff_summ.xlsx")
-# Bbov = "#D09FE9"
-# Bbig = "#E8B5B4"
-# Bdiv_cow = "#BFB9D6"
-# Bdiv_human = "#CED5BD"
+
 
 p <-
   ggplot(spp.specific.markers, aes(x=num.spp.genes, y=spp, fill = spp, color = spp)) +
@@ -814,10 +792,10 @@ ggsave(filename="../Output/compScBabsSpecies/figs/spp_specific_markers_set_diff.
 
 
 ################################################################
-# 
-##  Bdiv_human vs Bdiv_cow: Phase_based
 
-### B div human vs cow: Global unique
+##  Bdiv_human vs Bdiv_cow: Phase_based
+## B div human vs cow: Global unique
+
 DefaultAssay(S.O.integrated) <- 'RNA'
 Idents(S.O.integrated) <- 'spp'
 
@@ -953,13 +931,6 @@ ggsave(filename="../Output/compScBabsSpecies/figs/bdiv_human_vs_bdiv_cow_feature
 
 
 
-# p <- FeaturePlot(object = S.O.int.bdivs, features = markers.int.local.bdivs.sig.top$gene.x, label = T,repel = F,
-#                  #shape.by  = 'spp',
-#                  split.by = 'spp',
-#                  cols = c("grey", "blue"), reduction = "pca")
-# 
-# 
-# plot(p)
 
 exprs_bdivs <- exprExprData(S.O.int.bdivs, markers.int.local.bdivs.sig.top$GeneID)
 exprs_bdivs$spp[grepl('cow', exprs_bdivs$Sample)] <- 'Bdiv_cow'
@@ -1021,7 +992,7 @@ Idents(S.O.int.bdivs) <- 'spp'
 S.O.int.bdivs@meta.data$spp <- factor(S.O.int.bdivs@meta.data$spp, levels = c("Bdiv_cow", "Bdiv_human"))
 top.markers <- markers.int.local.bdivs.sig.top$GeneID
 
-#VlnPlot(subset(S.O.int.bdivs, idents = c('Brady', 'Intra')), features = gsub('_', '-', show.lab))
+
 p <- VlnPlot(S.O.int.bdivs, features = gsub('_', '-', top.markers))
 p + theme(axis.text  = element_text(face = "bold", size = 14))
 
@@ -1103,6 +1074,7 @@ host.markers.int.local.sig.specific <- host.markers.int.local.sig.cc  %>%  disti
 
 write.xlsx(host.markers.int.local.sig.specific, '../Output/compScBabsSpecies/tables/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig.xlsx')
 saveRDS(host.markers.int.local.sig.specific, '../Input/compScBabesia/RData/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig.RData')
+
 ## GO term table
 host.int.local.markers.orth <- host.markers.int.local.sig.specific %>% group_by(ref.host, phase) %>% na.omit() %>%
   summarise(genes = list(GeneID_Toxo), total = n())
@@ -1155,14 +1127,7 @@ ggsave(filename = "../Output/compScBabsSpecies/figs/Bdiv_human_vs_all_spp_in_cow
 ## top marker expression
 host.markers.int.local.top <- host.markers.int.local.sig.specific %>% group_by( ref.host) %>% 
   slice_max(n = 1, order_by = avg_log2FC.x)
-# 
-# p <- FeaturePlot(object = S.O.integrated, features = host.markers.int.local.top$gene.x, label = F,repel = F,
-#                  #shape.by  = 'spp',
-#                  split.by = 'host',
-#                  cols = c("grey", "blue"), reduction = "pca")
-# 
-# 
-# plot(p)
+
 
 exprs_hosts.phase <- exprExprData(S.O.integrated, host.markers.int.local.top$GeneID)
 exprs_hosts.phase <- exprs_hosts.phase %>% mutate(host = ifelse(str_detect(Sample,"human"), "human", "cow"))
@@ -1194,15 +1159,11 @@ p <- ggplot(exprs_hosts.phase, aes(x=-PC_1,y=-PC_2)) +
     axis.title.y = element_text(size=14, face="bold"), 
     legend.title = element_text(size = 14, face = "bold"))+
   theme(
-    #axis.text.x = element_blank(),
     axis.text.x = element_text(face="bold", size=16, angle=0, hjust = 1),
     axis.title.y = element_text(size=16, face="bold"),
     axis.title.x = element_text(size=16, face="bold"),
-    #axis.text.y = element_text(face="bold", size=12, angle=0),
-    #axis.text.y = element_blank(), 
     panel.grid.major = element_blank(),
     panel.grid.minor = element_blank(),
-    #panel.border = element_blank(),
     panel.spacing = unit(0.1, "lines"),
     axis.ticks.y = element_blank()
   )
@@ -1217,83 +1178,13 @@ ggsave(filename="../Output/compScBabsSpecies/figs/expr_Bdiv_human_vs_all_spp_in_
        dpi = 300
 )
 
-## please run sppDifferences.V3 whiich corrects for spp effect on host markers
-
-
-#####
-
-## this is not the right way of dooing it 
-# ## species specific markers in cow
-# 
-# DefaultAssay(S.O.integrated) <- 'RNA'
-# Idents(S.O.integrated) <- 'spp'
-# S.O.spp.cow <- subset(S.O.integrated, ident = c('Bbig', 'Bbov', 'Bdiv_cow'))
-# S.O.spp.cow@meta.data$host.spp <- paste(S.O.spp.cow@meta.data$host, S.O.spp.cow@meta.data$spp, sep = ":")
-# unique(S.O.spp.cow$host.spp)
-# 
-# 
-# DefaultAssay(S.O.spp.cow) <- 'RNA'
-# Idents(S.O.spp.cow) <- 'host.spp'
-# 
-# makeCowSppMatchedContrasts <- function(S.O.integrated){
-#   
-#   objs <- as.character(unique(S.O.integrated@meta.data$host.spp))
-#   
-#   contrasts <- data.frame(ref = objs, dummy = 1) %>% full_join( data.frame(query = objs, dummy = 1), by = 'dummy') %>% 
-#     mutate(ref.host = gsub(":.*", "", ref), ref.spp = gsub(".*:", "", ref), 
-#            query.host = gsub(":.*", "", query), query.spp = gsub(".*:", "", query))
-#   my.contrasts <- contrasts %>% filter(ref.spp != query.spp)
-#   
-#   return(my.contrasts)
-#   
-# }
-# 
-# contrasts <- makeCowSppMatchedContrasts(S.O.spp.cow)
-# contrasts.groups <- contrasts %>% group_by(ref) %>% summarise(query = list(query))
-# contrasts.groups$ref.spp <- gsub('.*:', '', contrasts.groups$ref)
-# contrasts.groups$ref.host <- gsub(':.*', '', contrasts.groups$ref)
-# 
-# 
-# cow.spp.DEGs <- mclapply(1:nrow(contrasts.groups), function(i){
-#   tmp <- FindMarkers(S.O.spp.cow, ident.1 = contrasts.groups$ref[i],
-#                      ident.2 = c(unlist(contrasts.groups$query[i])), 
-#                      only.pos = T, verbose = T)
-#   tmp$ref <- contrasts.groups$ref[i]
-#   tmp$ref.spp <- contrasts.groups$ref.spp[i]
-#   tmp$ref.host <- contrasts.groups$ref.host[i]
-#   tmp$gene <- rownames(tmp)
-#   tmp$GeneID <- gsub('-', '_', tmp$gene)
-#   return(tmp)
-# })
-# cow.spp.DEGs.all <- bind_rows(cow.spp.DEGs)
-# 
-# cow.spp.DEGs.sig <- cow.spp.DEGs.all %>% dplyr::filter(avg_log2FC > 0.58 & p_val_adj < 0.01)
-# #cow.spp.DEGs.sig  <- cow.spp.DEGs.sig %>% mutate(pct.ratio = (pct.1 / pct.2))
-# 
-# cow.spp.DEGs.sig.cc <- inner_join(cow.spp.DEGs.sig, cell.cycle.markers.sig, 
-#                                   by = c('GeneID','ref.spp' = 'spp'))
-# cow.spp.DEGs.sig.cc <- cow.spp.DEGs.sig.cc %>% dplyr::select(!contains(".y")) %>% distinct(GeneID, .keep_all  = T)
-# comm <-  host.markers.int.local.sig.specific$GeneID[unique(host.markers.int.local.sig.specific$GeneID) %in% cow.spp.DEGs.sig.cc$GeneID]
-# 
-# gene_ids <- c("Bdiv_010630", "Bdiv_020470c", "Bdiiv_035020", "Bdiv_003910", 
-#               "Bdiv_005170", "Bdiv_009600c", "Bdiv_018340", "Bdiv_022710", "Bdiv_000950", "Bdiv_037500")
-# 
-# gene_ids %in% comm
-# 
-# # # unique to spp and phase
-# # host.markers.int.local.sig.specific <- host.markers.int.local.sig.cc %>% distinct(GeneID, .keep_all = T) %>%
-# #   arrange(GeneID, desc(pct.ratio)) %>% group_by(GeneID) %>% slice_max(n = 1, order_by = pct.ratio)
-# 
-# 
-# write.xlsx(host.markers.int.local.sig.specific, '../Output/compScBabsSpecies/tables/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig.xlsx')
-# saveRDS(host.markers.int.local.sig.specific, '../Input/compScBabesia/RData/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig.RData')
+## please run sppDifferences.V3 which corrects for spp effect on host markers
 
 
 #########################################################
 
 ## GO plot 
 
-## GO trm 
 in.dir <- '../Output/compScBabsSpecies/GO/GOToxoDB_Cow_vs_Human/'
 #in.dir <- '../Output/compScBabsSpecies/GO/GOToxoDB_Species_Specific/'
 all.files <- list.files(in.dir)
@@ -1314,15 +1205,12 @@ for(f in all.files){
 all.clust.items <- do.call(rbind, all.clust.items)
 names(all.clust.items) <- gsub(" ", ".", names(all.clust.items))
 
-#saveRDS(all.clust.items, '../Input/compScBabesia/RData/GO_Conserved_Markers_TGGT1.RData')
 
 filtered.Go <- all.clust.items %>% arrange(phase, Benjamini) %>% distinct() %>%
   group_by(phase) %>% mutate(rank = row_number()) %>%
   dplyr::filter(Benjamini < 0.1 & rank < 30 ) %>% 
   arrange(phase, Benjamini) 
 
-#top <- filtered.Go %>% filter(phase == "HumG") %>% slice_min(n = 10, order_by = Benjamini)
-# 
 
 filtered.Go.lng <- filtered.Go %>% 
   mutate(Result.gene.list = strsplit(as.character(Result.gene.list), ",")) %>% 
@@ -1337,30 +1225,5 @@ GO_tab_df <- GO_tab_orth %>% group_by(ID, Name, GF, phase) %>% summarise(Bdiv_ID
 Go.Bdiv.TG1.IDs <- left_join(GO_tab_df, filtered.Go, by = c("ID", "Name", "GF", "phase"))
 
 write.xlsx(Go.Bdiv.TG1.IDs, "../Output/compScBabsSpecies/GO/GO_Term_bdiv_human_vs_all_spp_in_cow_BdivIDs.xlsx")
-
-
-
-# 
-# p <- ggplot(filtered.Go, aes(x = phase, y = Name)) + 
-#   geom_point(aes(colour = "red", size = -log(Benjamini))) +
-#   theme_bw(base_size = 14) +
-#   #scale_colour_gradient(limits=c(0, 0.01), low="red") +
-#   ylab(NULL) + xlab(NULL) + 
-#   theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 14, face="bold")) + 
-#   theme(axis.text.y = element_text(angle = 0, hjust = 1, size = 14, face="bold")) +
-#   theme(legend.position="none") +
-#   theme(strip.background = element_rect(colour="black", fill="white", 
-#                                         size=0.5, linetype="solid")) + guides(color = FALSE)+
-#   ggtitle(strsplit(in.dir,split = "/")[[1]][5]) +
-#   theme(plot.title = element_text(size = 10))
-# 
-# plot(p)
-# 
-# ggsave(filename="../Output/compScBabsSpecies/figs/GO_Human_vs_Cow.png", 
-#        plot=p,
-#        width = 12, height = 12, 
-#        units = "in", # other options are "in", "cm", "mm" 
-#        dpi = 300
-# )
 
 
