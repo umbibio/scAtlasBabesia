@@ -55,17 +55,10 @@ getCurvePeakLoc <- function(t, y){
   return(entity.x)
 }
 
-# 
-# sc.tc.df.adj <- readRDS('../Input/compScBabesia/RData/all_sc_tc_df_adj.RData')
-# sc.tc.df.adj <- sc.tc.df.adj[-5]
-# # # 
-# sc.tc.fits <- readRDS('../Input/compScBabesia/RData/all_sme_fits_sc_tc_20min.RData')
-# sc.tc.fits <- sc.tc.fits[-5]
 
 sc.tc.df.adj <- readRDS('~/Downloads/all_sc_tc_df_adj.RData')
 sc.tc.fits <- readRDS('~/Downloads/all_sme_fits_sc_tc_20min.RData')
 
-#markers.sig <- readRDS('../Input/compScBabesia/RData/all.markers.sig.RData')
 markers.sig <- readRDS('../Input/compScBabesia/RData/all.markers.sig.cell.cycle.phase.RData')
 
 sc.tc.mus <- lapply(1:length(sc.tc.fits), function(i){
@@ -81,11 +74,8 @@ sc.tc.mus <- lapply(1:length(sc.tc.fits), function(i){
 names(sc.tc.mus) <- names(sc.tc.fits)
 
 
-# sync.tc.df <- readRDS('../Input/compScBabesia/RData/bd_sync_tc_df.RData')
-# sync.tc.fit <- readRDS('../Input/compScBabesia/RData/bd_sme_fits_sync_tc_20min.RData')
-
-sync.tc.df <- readRDS('~/Downloads/bd_sync_tc_df.RData')
-sync.tc.fit <- readRDS('~/Downloads/bd_sme_fits_sync_tc_20min.RData')
+sync.tc.df <- readRDS('../Input/compScBabesia/newRData/bd_sync_tc_df.RData')
+sync.tc.fit <- readRDS('../Input/compScBabesia/newRData/bd_sme_fits_sync_tc_20min.RData')
 
 
 sync.tc.mu <- smoothSplineSmeFits(sync.tc.fit, unique(sync.tc.df$variable), extend = F)
@@ -175,10 +165,10 @@ ggsave(filename="../Output/compScBabsSpecies/figs/phase_boundaries.png",
        dpi = 300
 )
 
-# add transition boundaries line to data and figure 
+# add transition boundaries line to data and figure manually
 phase.boundaries.list <- split(phase.boundaries, phase.boundaries$spp)
 
-# manual bounds
+
 B.big.ph.bnd <- c(0, 2.5, 6.75, 8.25, 11.35, 12)
 B.bov.ph.bond <- c(0, 2.25, 7.5 , 8.25, 11.35, 12)
 B.div.cow.ph.bond <- c(0, 2.75, 7.15, 8.60, 11.35, 12)
@@ -228,6 +218,8 @@ ggsave(filename="../Output/compScBabsSpecies/figs/phase_boundaries_all_spp.png",
 
 ## phase boundries figure 3
 
+## colors
+
 SM: "#c44237"
 
 MC: "#ad8842"
@@ -266,23 +258,8 @@ ggsave(filename="../Output/compScBabsSpecies/figs/Bdiv_transition_boundaries.png
 
 
 
-# # mid point of peaks in each phase
-# mid.ph.trans <- lapply(phase.boundaries.list, function(ph){
-#   
-#   ph.mean.peak <- sort(unique(ph$mean.peak))
-#   mids <- c()
-#   for(i in 2:length(ph.mean.peak)){
-#     mids[i-1] <- (ph.mean.peak[i-1] + ph.mean.peak[i]) / 2
-#   }
-#   
-#   mids.phases <- c(mids)
-#   
-# })
-# 
-# mid.ph.trans
 
-
-## transition phases identified by vision
+## transition phases identified by vision and quantiles
 
 B.big.ph.bnd <- c(0, 2.5, 6.75, 8.25, 11.35, 12)
 B.bov.ph.bond <- c(0, 2.25, 7.5 , 8.25, 11.35, 12)
@@ -343,10 +320,6 @@ sc.tc.mus.scale.phase <- lapply(1:length(titles), function(i){
   sc.tc.mus.scale <- sc.tc.mus.scale[[i]]
   ph <- ph.trans[[i]]
   
-  # sc.tc.mus.scale <- sc.tc.mus.scale %>%
-  #   dplyr::mutate(cell.cycle.phase = ifelse((t >=  ph[2] & t < ph[3]), 'SM',
-  #                                           ifelse((t >= ph[3] & t < ph[4]), 'MC',
-  #                                                  ifelse(t >= ph[4] & t < ph[5] , 'C', 'G'))))
 
   sc.tc.mus.scale <- sc.tc.mus.scale %>%
     dplyr::mutate(cell.cycle.phase = ifelse((t >=  ph[1] & t < ph[2]), 'G1.L',
@@ -390,9 +363,7 @@ sc.tc.mus.scale.df <- lapply(1:length(sc.tc.mus.scale.phase), function(i){
   sc.tc.mus.scale.markers <- sc.tc.mus.scale.markers %>%
     mutate(num.deg.phase = factor(num.deg.phase, unique(arrange(sc.tc.mus.scale.markers, marker.phase)$num.deg.phase)))
 
-  # sc.tc.mus.scale.markers <- sc.tc.mus.scale.markers %>% 
-  #   mutate(num.degs = factor(num.degs, unique(arrange(sc.tc.mus.scale.markers, marker.phase)$num.degs)))
-  # 
+ 
   
   return(sc.tc.mus.scale.markers)
   
@@ -405,7 +376,6 @@ names(sc.tc.mus.scale.df) <- names(sc.tc.mus.scale)
 saveRDS(sc.tc.mus.scale.df,'../Input/compScBabesia/RData/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.RData')
 sc.tc.mus.scale.df <- readRDS('../Input/compScBabesia/RData/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.RData')
 
-#sc.tc.mus.scale.df <- readRDS('../Input/compScBabesia/RData/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.RData')
 titles <- c("B. big", "B. bov", "B. div (cow)", "B. div (human)")
 title.phases <- c("G1.L", "SM", "MC", "C", "G1.E")
 names(title.phases) <- c('G1.L',  'SM', 'MC', 'C','G1.E')
@@ -462,8 +432,9 @@ ggsave(filename="../Output/compScBabsSpecies/figs/Bdiv_human_gene_cluster_curves
        dpi = 300
 )
 
-## comparative  needs  work 
+
 # ggplot 
+# common/conserved markers
 sc.tc.mus.scale.df <- readRDS('../Input/compScBabesia/RData/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.RData')
 
 spps <- c('bbig', 'bbov', 'bdiv_c', 'bdiv_h')
@@ -472,8 +443,6 @@ for(i in 1:length(titles)){
 }
 
 com.genes  <- map(sc.tc.mus.scale.df, ~.$GeneID) %>% purrr::reduce(intersect) # common cyclic genes across spp
-
-#cons.markers.phases.sig.cc <- readRDS("../Input/compScBabesia/RData/conserved_markers_cross_spp_phase_based.RData")
 
 
 
