@@ -37,6 +37,8 @@ bmic.mt.cutoff <- 0.7
 
 filter.mit <- F
 
+## Set down.sample = T for lower memory usage and to reduce the computation time.
+
 processCountBabs <- function(input.dir, filename, down.sample = T){
   file.dir <- paste(input.dir, filename, sep = '')
   file.csv <- paste(filename, ".expr.csv", sep = "")
@@ -118,8 +120,8 @@ processCountBabs <- function(input.dir, filename, down.sample = T){
     S.O <- subset(x = S.O, downsample = 800)
   }
   
-  S.O.obj <- paste(paste("S.O", spp, sep = "."), "RData", sep = ".")
-  S.O.dir <- paste('../Input/compScBabesia/RData/' , S.O.obj, sep = "")
+  S.O.obj <- paste(paste("S.O", spp, sep = "."), "rds", sep = ".")
+  S.O.dir <- paste('../Input/compScBabesia/rds_rev2/' , S.O.obj, sep = "")
   saveRDS(S.O, S.O.dir)
   
   L <- list(pheno = pheno, S.O = S.O)
@@ -139,7 +141,7 @@ for(i in 1:num.total.files){
 }
 
 names(S.O.list) <- c('bbig', 'bbov', 'bdiv_cow', 'bdiv_human', 'bmic')
-saveRDS(S.O.list, '../Input/compScBabesia/RData/S.O.list.Rdata')
+saveRDS(S.O.list, '../Input/compScBabesia/rds_rev2/S.O.list.rds')
 
 
 ### Working with orthologous genes only
@@ -168,7 +170,7 @@ common.genes <- Reduce(intersect, ortho.genes.bdiv.id)
 orthologs.common <- orthologs[which(orthologs$Bdiv %in% common.genes), ]
 
 
-processCountBabsBdivOrth <- function(input.dir, filename, orthologs.common, down.sample = T){
+processCountBabsBdivOrth <- function(input.dir, filename, orthologs.common, down.sample = F){
   file.dir <- paste(input.dir, filename, sep = '')
   file.csv <- paste(filename, ".expr.csv", sep = "")
   
@@ -246,8 +248,8 @@ processCountBabsBdivOrth <- function(input.dir, filename, orthologs.common, down
     S.O <- subset(x = S.O, downsample = 800)
   }
   
-  S.O.obj <- paste(paste("S.O", spp, "ortholog", sep = "."), "RData", sep = ".")
-  S.O.dir <- paste('../Input/compScBabesia/RData/' , S.O.obj, sep = "")
+  S.O.obj <- paste(paste("S.O", spp, "ortholog", sep = "."), "rds", sep = ".")
+  S.O.dir <- paste('../Input/compScBabesia/rds_rev2/' , S.O.obj, sep = "")
   saveRDS(S.O, S.O.dir)
   
   L <- list(pheno = pheno, S.O = S.O)
@@ -265,6 +267,6 @@ for(i in 1:num.total.files){
 }
 
 names(S.O.list) <- c('bbig', 'bbov', 'bdiv_cow', 'bdiv_human', 'bmic')
-saveRDS(S.O.list, '../Input/compScBabesia/RData/S.O.list.ortholog.Rdata')
+saveRDS(S.O.list, '../Input/compScBabesia/rds_rev2/S.O.list.ortholog.rds')
 
 

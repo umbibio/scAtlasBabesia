@@ -20,7 +20,7 @@ prep_S.O <- function(S.O, res = 0.1, var.features = F, down.sample = F){
     S.O <- FindNeighbors(S.O, dims = 1:13)
     S.O <- FindClusters(S.O, resolution = res)
   }
-  S.O <- RunUMAP(S.O, dims = 1:13)
+  S.O <- RunUMAP(S.O, dims = 1:30)
   return(S.O)
 }
 
@@ -149,7 +149,7 @@ fitPseudoTime <- function(S.O, reverset.time = F){
  
   ## Filtering to include genes that fit well with pseudo time
   ##cat('Network smoothing on GAM genes\n')
-  ##S.O.gam <- subset(S.O, features = names(gam.pval.sig))
+  S.O.gam <- subset(S.O, features = names(gam.pval.sig))
   ##S.O.gam <- prep_S.O(S.O.gam)
   ##S.O.gam.smooth <- smooth.S.O(S.O.gam)
   
@@ -157,6 +157,134 @@ fitPseudoTime <- function(S.O, reverset.time = F){
   L <- list(cell.cycle.genes.df = cell.cycle.genes.df, 
             sds.data = sds.data,
             gam.genes = names(gam.pval.sig))
+  
+  return(L)
+}
+
+
+getGamCovDetrend <- function(S.O){
+  
+  num.cores <- detectCores(all.tests = FALSE, logical = TRUE)
+  ## Fit a pseudo-time curve and align using sync data
+  pc <- getPCA(S.O)
+  sds.data <- getPrinCurve(pc)
+  pc.sds <- left_join(pc, sds.data, by = "Sample")
+  
+  Y <- log2(S.O@assays$RNA@data + 1)
+  var.genes <- names(sort(apply(Y, 1, var),decreasing = TRUE))#[1:1000] 
+  Y <- Y[var.genes, ]
+  
+  pt <- sds.data$pt
+  
+  
+  ## Map the pseudo-time to 0-12:20 hours 
+  t <- (12 + 1/3) * ((as.numeric(pt) - min(as.numeric(pt)))/(max(as.numeric(pt)) - min(as.numeric(pt))))
+  sds.data$t <- t
+  
+  ## time-index cells in 20 min intervals and identify cells in each partition
+  ## They will be considered as replicates
+  time.breaks <- seq(1/3, 12 + 1/3, by = 1/3) 
+  time.idx <- rep(0, nrow(sds.data))
+  
+  ind <- which(sds.data$t <= time.breaks[1])
+  time.idx[ind] <- 0
+  
+  for(i in 2:length(time.breaks)){
+    ind <- which(sds.data$t > time.breaks[(i-1)] & sds.data$t <= time.breaks[i])
+    time.idx[ind] <- i - 1
+  }
+  
+  sds.data$time.idx <- time.idx
+  
+  ## Update the time to 20 min increments
+  sds.data$t <- (time.idx) * (1/3)
+  
+  sds.data <- sds.data %>%  
+    group_by(time.idx) %>% mutate(rep = seq(1:n()))
+  
+  
+  ## Run a GAM regression of expression on the pseudo-time
+  ## Use parallel computation to speed things up. 16 cores
+  cat('Fitting the GAM model\n')
+  gam.pval <- mclapply(1:nrow(Y), function(z){
+    d <- data.frame(z=as.numeric(Y[z,]), t=as.numeric(pt))
+    tmp <- gam(z ~ lo(t), data=d)
+    # p <- summary(tmp)[4][[1]][1,5] ## Linear Effects
+    p <- summary(tmp)$anova$`Pr(F)`[2] ## nonlinear effects
+    p
+  }, mc.cores = num.cores)
+  
+  gam.pval <- unlist(gam.pval)
+  names(gam.pval) <- rownames(Y)
+  ## Remove the NA's and get the best fits
+  if(any(is.na(gam.pval))){
+    gam.pval <- gam.pval[-which(is.na(gam.pval))]
+  }
+  
+  gam.pval.adj <- p.adjust(gam.pval, method = 'fdr', n = length(gam.pval))
+  gam.pval.sig <- gam.pval[gam.pval.adj < 0.01] 
+  print(length(gam.pval.sig)) ## number of correlating genes
+  
+  ## Sort the cells on the pt
+  cell.ord <- sds.data$cell.ord
+  
+  topgenes <- names(sort(gam.pval.sig, decreasing = FALSE))  
+  cell.cycle.genes.expr <- as.matrix(S.O@assays$RNA@data[topgenes, cell.ord])
+  #cell.cycle.genes.expr <- as.matrix(S.O.bd.filt@assays$smooth@data[topgenes, cell.ord]) ## smoothed version
+  
+  
+  cell.cycle.genes.df <- data.frame(GeneID = rownames(cell.cycle.genes.expr),
+                                    cell.cycle.genes.expr) %>% 
+    pivot_longer(-c(GeneID), names_to = 'Sample', values_to = 'log2.expr')
+  
+  
+  cell.cycle.genes.df$GeneID <- gsub('-', '_', cell.cycle.genes.df$GeneID)
+  cell.cycle.genes.df <- left_join(cell.cycle.genes.df, sds.data, by = 'Sample')
+  cell.cycle.genes.df$cluster <- S.O@meta.data$seurat_clusters[match(cell.cycle.genes.df$Sample, 
+                                                                     rownames(S.O@meta.data))]
+  
+  ## Filtering to include genes that fit well with pseudo time
+  ##cat('Network smoothing on GAM genes\n')
+  S.O.gam <- subset(S.O, features = names(gam.pval.sig))
+  Ft <- S.O.gam@assays$RNA@data
+  sds <- apply(Ft, 1, sd)
+  rm.ind <- which(sds == 0)
+  
+  if(length(rm.ind) > 0){
+    Ft <- Ft[-rm.ind,]
+  }
+  
+  sc.tc.df <- cell.cycle.genes.df %>% 
+    transmute(GeneID = GeneID, Sample = Sample, t = t, rep = rep)
+  
+  Ft_long <- Ft %>% data.frame() %>% mutate(GeneID = rownames(.)) %>% 
+    pivot_longer(-GeneID, names_to = 'Sample', values_to = 'raw_expr') 
+  
+  Ft_long$GeneID <- gsub('-', '_', Ft_long$GeneID)
+  
+  Ft_long <- left_join(Ft_long, sc.tc.df, by = c('GeneID', 'Sample'))
+  
+  Ft_long.fits <- Ft_long %>% group_by(GeneID, t) %>% summarise(mean_trend = mean(raw_expr))
+  Ft_long <- left_join(Ft_long, Ft_long.fits, by = c('GeneID', 't'))
+  Ft_long <- Ft_long %>% arrange(GeneID, t, rep)
+  Ft_long <- Ft_long %>% mutate(de_trend.exp = raw_expr - mean_trend)
+  
+  Ft_wide <- Ft_long %>% dplyr::select(Sample, GeneID, de_trend.exp) %>%
+    pivot_wider(everything(), names_from = Sample, values_from = de_trend.exp) 
+  
+  genes <- gsub('_', '-', Ft_wide$GeneID)
+  Ft_wide <- Ft_wide %>% dplyr::select(-GeneID)
+  rownames(Ft_wide) <- genes
+  
+  Ft.scale <- scale(t(Ft_wide))
+  S <- cov(Ft.scale)
+  
+  S.O.gam <- subset(S.O.gam, features = rownames(S))
+  
+  L <- list(S.O.gam = S.O.gam, 
+            Ft.detrend = Ft_long,
+            gam.genes = rownames(S),
+            S = S)
   
   return(L)
 }
@@ -357,6 +485,17 @@ alignBdivPseudoTimeWithBulkSync <- function(S.O.bd, bd.cell.cycle.genes.df, sds.
     lag.time <- ceiling(den$x[which.max(den$y)])
   }
 
+  ### Debugging
+  # ind <- which(dd$lag == 0)
+  # par(mfrow = c(2,1))
+  # for(i in ind[20:30]){
+  #   plot(mu.sc.com.grid[[i]]$x, mu.sc.com.grid[[i]]$y, type = 'l', col = 'blue', 
+  #        xlab = 'pt', ylab = 'norm_expr', title = 'sc')
+  #   plot(mu.sync.com.grid[[i]]$x, mu.sync.com.grid[[i]]$y, type = 'l', col = 'red', 
+  #        xlab = 'pt', ylab = 'norm_expr', title = 'sc')
+  #   Sys.sleep(0.7)
+  # }
+  ##
   adjusted.time <- (sds.data$time.idx * 1/3) -  sort(unique(sds.data$time.idx) * 1/3)[lag.time]
   neg.ind <- ifelse(adjusted.time < 0, T, F)
   adjusted.time[neg.ind] <- adjusted.time[neg.ind] + (12 + 1/3)
@@ -424,6 +563,7 @@ alignBdivPseudoTimeWithBulkSync <- function(S.O.bd, bd.cell.cycle.genes.df, sds.
   
   return(L)
 }
+
 
 getNormExpr <- function(S.O){
   expr.norm <- as.matrix(S.O[["RNA"]]@data)
@@ -575,7 +715,7 @@ splinefunctionSmeFits <- function(fits, variables, extend = F){
                                          method = "natural")) 
   if(extend){
     mus <- lapply(musfun, function(ff){
-      x <- seq(0, 12, by = 1/3)
+      x <- seq(0, 12, 0.01)
       y <- ff(x)
       mu = list(x = x, y = y)
     })
@@ -625,6 +765,30 @@ smoothSplineSmeFits <- function(fits, variables, extend = F){
   
 }
 
+smoothSplineSmeFitsV2 <- function(fits, variables, extend = F){
+  ## Fitting the estimated kernel with smooth splines
+  
+  
+  mus <- lapply(fits, function(x) 
+    smooth.spline(x = as.numeric(colnames(x$coefficients)), 
+                  y = x$coefficients[1,])) 
+  if(extend){
+    mus <- lapply(mus, function(x)
+      predict(x, seq(0, 12, by = 0.01)))
+  }
+  
+  mus.y <- unlist(lapply(mus, `[[`, 2))
+  mus.x <- unlist(lapply(mus, `[[`, 1))
+  lens  <- unlist(lapply(lapply(mus, `[[`, 1), length))
+  
+  mus <- data.frame(variable = rep(variables, times = lens),
+                    tme = mus.x,
+                    y = mus.y)
+  
+  return(mus)
+  
+}
+
 
 ## spline the fitted values to get the means
 smoothSplineSmeFitsConfBand <- function(fits, variables){
@@ -635,9 +799,9 @@ smoothSplineSmeFitsConfBand <- function(fits, variables){
                   y = x$coefficients[1,])) 
   # if(extend){
   #   mus <- lapply(mus, function(x)
-  #     predict(x, seq(0, 12, by = 1/3)))
+  #     predict(x, seq(0, 12, by = 0.1)))
   # }
-  
+  # 
   mus.y <- unlist(lapply(mus, `[[`, 2))
   mus.x <- unlist(lapply(mus, `[[`, 1))
   lens  <- unlist(lapply(lapply(mus, `[[`, 1), length))
