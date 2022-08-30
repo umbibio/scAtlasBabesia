@@ -14,4 +14,4 @@ To install the code please clone the library by copy pasting the following in yo
 
 git clone https://github.com/umbibio/scBabesiaAtlases.git
 
-The users can download the rds folder including all required files to run the analysis pipeline smoothly and generate the figures from paper. it is also suggested to creat an empty folder called <em> Input</em> to save the results to use as input of the following analysis.
+You can download the rds folder that includes all processed data. The rds files can be used to run the analysis pipeline smoothly and generate the figures in the paper. We suggest that you save the rds folder within the same directory where the code is cloned. Alternatively, change the relative path in the code.
