@@ -1,3 +1,6 @@
+
+## Cluster Curves accordiing to Toxo Cell cycle phases
+
 library(Seurat)
 library(openxlsx)
 library(ggplot2)
@@ -57,13 +60,13 @@ getCurvePeakLoc <- function(t, y){
   return(entity.x)
 }
 
-# read fitted splines data with their peak order 
+# read time course data
 
-sc.tc.df.adj <- readRDS('../Input/compScBabesia/RData_new/all_sc_tc_df_adj.RData')
-sc.tc.fits <- readRDS('../Input/compScBabesia/RData_new/all_sme_fits_sc_tc_20min.RData')
+sc.tc.df.adj <- readRDS('./rds/all_sc_tc_df_adj.rds')
+sc.tc.fits <- readRDS('./rds/all_sme_fits_sc_tc_20min.RData')
 
 # keeping the genes that are cell cycle markers
-markers.sig <- readRDS('../Input/compScBabesia/RData/all.markers.sig.cell.cycle.phase.RData')
+markers.sig <- readRDS('./rds/all.markers.sig.cell.cycle.phase.rds')
 
 sc.tc.mus <- lapply(1:length(sc.tc.fits), function(i){
   sc.tc.mu <- smoothSplineSmeFits(sc.tc.fits[[i]], unique(sc.tc.df.adj[[i]]$variable), extend = F)
@@ -78,7 +81,7 @@ sc.tc.mus <- lapply(1:length(sc.tc.fits), function(i){
 names(sc.tc.mus) <- names(sc.tc.fits)
 
 
-# read time course Bdiv Bulk rna from Brendan et al.
+# read time course Bdiv Bulk rna 
 sync.tc.df <- readRDS('../Input/compScBabesia/RData_new/bd_sync_tc_df.RData')
 sync.tc.fit <- readRDS('../Input/compScBabesia/RData_new/bd_sme_fits_sync_tc_20min.RData')
 
@@ -101,8 +104,9 @@ sc.hc_dtws <- lapply(sc.tc.mus, function(x){
 
 # toxo top marker info 
 
-toxo.markers <- readRDS('../Input/compScBabesia/RData/TG.markers.sig.RData')
-toxo.bdiv.orth <- read.xlsx('../Input/compScBabesia/Orthologs/GT1_BDiv.xlsx')
+toxo.markers <- readRDS('./rds/TG.markers.sig.rds')
+toxo.bdiv.orth <- read.xlsx('./rds/GT1_BDiv.xlsx')
+
 toxo.markers <- inner_join(toxo.markers, toxo.bdiv.orth, by = c('GeneID' = 'GeneID_Toxo'))
 
 # look at the top 20 toxo markers
@@ -121,7 +125,7 @@ top.markers <- lapply(1:length(markers.sig), function(i){
 names(top.markers) <- names(markers.sig)
 
 
-## transition phases identified by vision
+## transition phases identified by vision and inspecting quantiles
 
 B.big.ph.bnd <- c(0, 2.5, 6.75, 8.25, 11.35, 12)
 B.bov.ph.bond <- c(0, 2.25, 7.5 , 8.25, 11.35, 12)
@@ -131,7 +135,7 @@ B.div.hum.ph.bond <- c(0, 2.25, 6.75, 8.75, 11.35 ,12)
 ph.trans <- list(B.big.ph.bnd, B.bov.ph.bond, B.div.cow.ph.bond, B.div.hum.ph.bond)
 names(ph.trans) <- names(sc.tc.fits)
 
-#  reorder and scale genes for heatmap
+## reorder and scale genes for heatmap visualizatioin
 
 sc.tc.mus.scale <- lapply(1:length(sc.tc.mus), function(i){
   
@@ -182,7 +186,7 @@ sc.tc.mus.scale.phase <- lapply(1:length(titles), function(i){
   sc.tc.mus.scale <- sc.tc.mus.scale[[i]]
   ph <- ph.trans[[i]]
 
-  # defining cell cycle phase based on transition pooints
+  # lable phases based on transition point 
   sc.tc.mus.scale <- sc.tc.mus.scale %>%
     dplyr::mutate(cell.cycle.phase = ifelse((t >=  ph[1] & t < ph[2]), 'G1.L',
                                             ifelse((t >= ph[2] & t < ph[3]), 'SM',
@@ -232,8 +236,9 @@ names(sc.tc.mus.scale.df) <- names(sc.tc.mus.scale)
 
 
 
-saveRDS(sc.tc.mus.scale.df,'./Input/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.RData')
-sc.tc.mus.scale.df <- readRDS('./Input/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.RData')
+saveRDS(sc.tc.mus.scale.df,'./Input/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.rds')
+
+#sc.tc.mus.scale.df <- readRDS('./Input/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.rds')
 
 # plot
 
