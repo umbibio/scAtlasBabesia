@@ -135,12 +135,11 @@ for(i in 1:num.total.files){
 }
 
 names(S.O.list) <- c('bbig', 'bbov', 'bdiv_cow', 'bdiv_human', 'bmic')
-saveRDS(S.O.list, './Input/S.O.list.rds')
+
 
 
 ### Working with orthologous genes only
 orthologs <- read.xlsx("./rds/Bdiv_Bmic_Bbov_Bbig_orth.xlsx")
-#orthologs <- read.xlsx("../Input/compScBabesia/Orthologs/Bdiv_Bbig_Bbov_orth.xlsx")
 
 
 num.objs <- length(S.O.list)
@@ -239,8 +238,7 @@ processCountBabsBdivOrth <- function(input.dir, filename, orthologs.common, down
   }
   
   S.O.obj <- paste(paste("S.O", spp, "ortholog", sep = "."), "rds", sep = ".")
-  #S.O.dir <- paste('./input/' , S.O.obj, sep = "")
-  saveRDS(S.O, S.O.dir)
+  
   
   L <- list(pheno = pheno, S.O = S.O)
   return(L)
@@ -257,6 +255,6 @@ for(i in 1:num.total.files){
 }
 
 names(S.O.list) <- c('bbig', 'bbov', 'bdiv_cow', 'bdiv_human', 'bmic')
-saveRDS(S.O.list, './Input/S.O.list.ortholog.rds')
+
 
 
