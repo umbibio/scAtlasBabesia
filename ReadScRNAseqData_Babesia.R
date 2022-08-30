@@ -15,8 +15,8 @@ source('./util_funcs.R')
 ## This script reads the expr.csv files for all Babesia species
 ## It generates and saves the Seurat object. 
 
-mito.genes <- read.xlsx("../Input/compScBabesia/genes/mitochondiral_genes.xlsx")
-input.dir <- "../Input/compScBabesia/scRNAseqBabesia/"
+mito.genes <- read.xlsx("./rds/mitochondiral_genes.xlsx")
+input.dir <- "./rds/scRNAseqBabesia/"
 count.files <- list.files(input.dir)
 num.total.files <- length(count.files)
 
@@ -135,11 +135,11 @@ for(i in 1:num.total.files){
 }
 
 names(S.O.list) <- c('bbig', 'bbov', 'bdiv_cow', 'bdiv_human', 'bmic')
-saveRDS(S.O.list, './input/S.O.list.rds')
+saveRDS(S.O.list, './Input/S.O.list.rds')
 
 
 ### Working with orthologous genes only
-orthologs <- read.xlsx("../Input/compScBabesia/Orthologs/Bdiv_Bmic_Bbov_Bbig_orth.xlsx")
+orthologs <- read.xlsx("./rds/Bdiv_Bmic_Bbov_Bbig_orth.xlsx")
 #orthologs <- read.xlsx("../Input/compScBabesia/Orthologs/Bdiv_Bbig_Bbov_orth.xlsx")
 
 
@@ -217,10 +217,6 @@ processCountBabsBdivOrth <- function(input.dir, filename, orthologs.common, down
     S.O <- subset(S.O, subset = nFeature_RNA > cutoff[1] & nFeature_RNA < cutoff[2])
   }
   
-  #FeatureScatter(S.O, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
-  #cutoffs <- quantile(S.O$nCount_RNA, probs = c(0.01, 0.9))
-  #print(cutoffs)
-  #S.O <- subset(S.O, subset = nFeature_RNA > cutoffs[1] & nFeature_RNA < cutoffs[2] )
   
 
   S.O <- prep_S.O(S.O)
@@ -243,7 +239,7 @@ processCountBabsBdivOrth <- function(input.dir, filename, orthologs.common, down
   }
   
   S.O.obj <- paste(paste("S.O", spp, "ortholog", sep = "."), "rds", sep = ".")
-  S.O.dir <- paste('../Input/compScBabesia/rds_rev2/' , S.O.obj, sep = "")
+  #S.O.dir <- paste('./input/' , S.O.obj, sep = "")
   saveRDS(S.O, S.O.dir)
   
   L <- list(pheno = pheno, S.O = S.O)
@@ -261,6 +257,6 @@ for(i in 1:num.total.files){
 }
 
 names(S.O.list) <- c('bbig', 'bbov', 'bdiv_cow', 'bdiv_human', 'bmic')
-saveRDS(S.O.list, '../Input/compScBabesia/rds_rev2/S.O.list.ortholog.rds')
+saveRDS(S.O.list, './Input/S.O.list.ortholog.rds')
 
 
