@@ -13,7 +13,7 @@ library(MyEllipsefit)
 
 source('./util_funcs.R')
 
-S.O.list <- readRDS('../Input/compScBabesia/rds_rev2/S.O.list.ortholog.rds')
+S.O.list <- readRDS('./rds/S.O.list.ortholog.rds')
 num.cores <- detectCores(all.tests = FALSE, logical = TRUE)
 
 phenos <- lapply(S.O.list, `[[`, 1)
@@ -32,9 +32,7 @@ all.samples.integrated <- processeMergedS.O(S.O.list, file.info, data.ind, ref.i
 all.samples.integrated@meta.data$spp <- factor(all.samples.integrated@meta.data$spp, 
                                                levels = unique(all.samples.integrated@meta.data$spp))
 
-saveRDS(all.samples.integrated, '../Input/compScBabesia/rds_rev2/all.samples.integrated.rds')
-
-#Idents(all.samples.integrated) <- "phase.cond"
+saveRDS(all.samples.integrated, './Input/all.samples.integrated.rds')
 
 p <- DimPlot(all.samples.integrated, reduction = "pca", 
              #group.by = "cells", 
@@ -61,7 +59,6 @@ all.samples.integrated.flip[['pca']]@cell.embeddings[,2] <- -all.samples.integra
 
 
 p <- DimPlot(all.samples.integrated.flip, reduction = "pca", 
-             #group.by = "cells", 
              split.by = 'spp',
              pt.size = 1,
              shape.by='spp',
@@ -83,7 +80,7 @@ S.O.integrated.list <- SplitObject(all.samples.integrated.flip, split.by = 'spp'
 
 
 ## Fit a pseudo-time to each using and align with Bdiv bulk data.
-bd.tc.logCPM <- readRDS('../Input/compScBabesia/rds_rev2/bd_sync_tc_logCPM.rds')
+bd.tc.logCPM <- readRDS('./rds/bd_sync_tc_logCPM.rds')
 
 plotUpdatedPstimeS.O <- function(L){
   Idents(L$S.O.bd.update) <- 'adj.time.idx'
@@ -239,8 +236,8 @@ plot(p)
 
 
 
-saveRDS(L1, '../Input/compScBabesia/rds_rev2/all_pstime_fits_L1.rds')
-saveRDS(L2, '../Input/compScBabesia/rds_rev2/all_pstime_fits_L2.rds')
+saveRDS(L1, './Input/all_pstime_fits_L1.rds')
+saveRDS(L2, './Input/all_pstime_fits_L2.rds')
 
 
 cell_cycle_genes_df <- lapply(L1, `[[`, 1)
@@ -250,7 +247,7 @@ cell_cycle_genes_df_adj <- lapply(L2, `[[`, 8)
 saveRDS(cell_cycle_genes_df_adj, '../Input/compScBabesia/rds_rev2/all_cell_cycle_genes_df_adj.rds')
 
 sc.tc.df.adj <- lapply(L2, `[[`, 10)
-saveRDS(sc.tc.df.adj, '../Input/compScBabesia/rds_rev2/all_sc_tc_df_adj.rds')
+saveRDS(sc.tc.df.adj, './Input/all_sc_tc_df_adj.rds')
 
 
 #### No Rerun above
@@ -286,12 +283,6 @@ p <- grid.arrange(ps[[1]], ps[[2]], ps[[3]], ps[[4]], ncol = 4)
 
 plot(p)
 
-ggsave(filename="../Output/compScBabsSpecies/figs/pstime_fits.png",
-       plot=p,
-       width = 12, height = 6,
-       units = "in", # other options are "in", "cm", "mm"
-       dpi = 300
-)
 
 
 #LabelClusters(plot = p1, id = 'adj.time.idx', size = 7, repel = T, color = 'black')
@@ -316,7 +307,7 @@ saveRDS(S.O.integrated.list.update.orth, '../Input/compScBabesia/rds_rev2/S.O.in
 S.O.integrated.list.update <- lapply(L2, `[[`, 1)
 
 names(S.O.integrated.list.update) <- names(S.O.list)[1:4]
-saveRDS(S.O.integrated.list.update, '../Input/compScBabesia/rds_rev2/S.O.integrated.list.pstime.rds')
+saveRDS(S.O.integrated.list.update, './Input/S.O.integrated.list.pstime.rds')
 
 
 S.O.integrated.list.update.orth.indiv <- lapply(1:length(L2), function(i){
@@ -326,20 +317,8 @@ S.O.integrated.list.update.orth.indiv <- lapply(1:length(L2), function(i){
 })
 
 names(S.O.integrated.list.update.orth.indiv) <- names(S.O.list)[1:4]
-saveRDS(S.O.integrated.list.update.orth.indiv, '../Input/compScBabesia/rds_rev2/S.O.integrated.list.pstime.GAM.indiv.rds')
+saveRDS(S.O.integrated.list.update.orth.indiv, './Input/S.O.integrated.list.pstime.GAM.indiv.rds')
 
-# S.O.gams <- lapply(S.O.integrated.list.update, function(S.O){
-#   S.O.gam <- subset(S.O, features = gam.common)
-#   #S.O.gam <- prep_S.O(S.O.gam)
-#   #S.O.gam.smooth <- smooth.S.O(S.O.gam)
-#   return(S.O.gam)
-# })
-
-#S.O.gam = lapply(S.O.gams, `[[`, 1)
-#S.O.gam.smooth = lapply(S.O.gams, `[[`, 2)
-
-#saveRDS(S.O.gams, '../Input/compScBabesia/RData/S.O.list.ortholog.gam.Rdata')
-#saveRDS(S.O.gam.smooth, '../Input/compScBabesia/RData/S.O.list.ortholog.gam.smooth.Rdata')
 
 
 ######
