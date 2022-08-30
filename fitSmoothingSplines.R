@@ -9,8 +9,8 @@ num.cores <- detectCores(all.tests = FALSE, logical = TRUE)
 
 ## Read in the data.
 
-L1 <- readRDS('../Input/compScBabesia/rds_rev2/all_pstime_fits_L1.rds')
-L2 - readRDS('../Input/compScBabesia/rds_rev2/all_pstime_fits_L2.rds')
+L1 <- readRDS('./rds/all_pstime_fits_L1.rds')
+L2 <- readRDS('./rds/all_pstime_fits_L2.rds')
 
 ## Run once or read from disk
 num.cores <- detectCores(all.tests = FALSE, logical = TRUE)
@@ -46,7 +46,7 @@ sc.spline.fits <- lapply(sc.tc.df.adj, function(df){
   return(spline.fits)
 })
 
-saveRDS(sc.spline.fits, '../Input/compScBabesia/rds_rev2/bd_spline_fits_sc_tc_20min.rds')
+saveRDS(sc.spline.fits, './Input/bd_spline_fits_sc_tc_20min.rds')
 
 ## Sychrnonized bulk reads
 genes <- unique(sync.tc.df$variable)
@@ -70,6 +70,6 @@ sync.spline.fits <- mclapply(1:length(genes), function(i){
   return(mu)
 }, mc.cores = num.cores)
 
-saveRDS(sync,spline.fits, '../Input/compScBabesia/rds_rev2/all_spline_fits_sc_tc_20min.rds')
+saveRDS(sync,spline.fits, './Input/all_spline_fits_sc_tc_20min.rds')
 
 
