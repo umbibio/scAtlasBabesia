@@ -22,6 +22,7 @@ source('./util_funcs.R')
 
 ## helper functions 
 
+# generate matched contrasts between phases (ex. C vs C)
 makeMatchedContrasts <- function(S.O.integrated){
   
   objs <- as.character(unique(S.O.integrated@meta.data$phase.spp))
@@ -35,6 +36,7 @@ makeMatchedContrasts <- function(S.O.integrated){
   
 }
 
+# Find markers between desired contrasts
 getSigGlobalMarkers <- function(S.O.obj){
   
   markers <- FindAllMarkers(object = S.O.obj, only.pos = TRUE, min.pct = 0) 
@@ -46,6 +48,7 @@ getSigGlobalMarkers <- function(S.O.obj){
   return(M)
 }
 
+# Find markers between cell cycle phases 
 getCellCyclePhaseMarkers <- function(S.O.integrated){
   S.O.integrated.merge.list <- SplitObject(S.O.integrated, split.by = "spp")
   spps <- names(S.O.integrated.merge.list)
@@ -66,6 +69,8 @@ getCellCyclePhaseMarkers <- function(S.O.integrated){
   return(all.markers.sig)
 }
 
+
+# extract expression data for plotting 
 exprExprData <- function(S.O, genes){
   expr <- data.frame(as.matrix(S.O@assays$RNA@data))
   expr$GeneID <- gsub('-', '_', rownames(as.matrix(S.O@assays$RNA@data)))
@@ -87,6 +92,7 @@ exprExprData <- function(S.O, genes){
   expr.filt <- inner_join(meta.data, expr.filt, by = 'Sample')
   return(expr.filt)  
 }
+
 
 getCurvePeakLoc <- function(t, y){
   
@@ -129,22 +135,21 @@ getCurvePeakLoc <- function(t, y){
 }
 
 
-## read product description and ortholog files 
+## read in data 
 
-prod.desc <- read.xlsx('./input/BDiv_Prod_desc.xlsx')
+prod.desc <- read.xlsx('./rds/BDiv_Prod_desc.xlsx')
 prod.desc <- prod.desc %>% transmute(GeneID = Gene.ID, ProductDescriptionBdiv = Product.Description) %>% distinct()
 
 
-toxo.bdiv.orth <- read.xlsx("./input/GT1_BDiv.xlsx")
+toxo.bdiv.orth <- read.xlsx("./rds/GT1_BDiv.xlsx")
 colnames(toxo.bdiv.orth) <- c('GeneID_Toxo', 'GeneID', 'ProductDescriptionToxo')
 
 num.cores <- detectCores()
 
-################################################################
-## cell cycle marker analysis done per spp (no common genes)
-################################################################
 
-S.O.integrated.list <- readRDS("./input/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds")
+## cell cycle marker analysis done per spp (no common genes)
+
+S.O.integrated.list <- readRDS("./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds")
 markers.sig.list <- lapply(S.O.integrated.list, function(S.O) {
   
   spp <- unique(S.O@meta.data$spp)
@@ -172,15 +177,15 @@ all.markers.sig$phase <- factor(all.markers.sig$phase, levels = c('G', 'SM', 'MC
 all.markers.sig.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(genes = list(GeneID), num.deg = n()) 
 
 
-#saveRDS(all.markers.sig.stat, './input/all.markers.sig.cell.cycle.phase.RData')
+#saveRDS(all.markers.sig.stat, './Input/all.markers.sig.cell.cycle.phase.RData')
 
 
-################################################################
+
 ## Doing diff exp using anchored datasets
 ## Orthologs S.Os after  integration
-################################################################
 
-S.O.integrated <- readRDS('./input/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds')
+
+S.O.integrated <- readRDS('./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds')
 spps <- names(S.O.integrated)
 
 ## Differential expression must be done on genes present in all datasets
@@ -225,7 +230,7 @@ S.O.integrated@meta.data$phase.spp <- paste(S.O.integrated@meta.data$spp, S.O.in
 
 
 
-S.O.integrated <- readRDS('./input/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase_sinlge_obj.rds')
+S.O.integrated <- readRDS('./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase_sinlge_obj.rds')
 
 
 ## Cell cycle marker: Independently done per spp (common genes)
@@ -236,10 +241,7 @@ cell.cycle.markers.sig <- left_join(cell.cycle.markers.sig, toxo.bdiv.orth, by='
 # we will use this markers for filtering genes on the following markeer analysis
 
 
-
-################################################################
 ## Cross spp differential expression: Phase-based unique markers
-################################################################
 
 ## spp specific cell cycle markers 
 ## Identity based comparison. EX: compare C to C accross all spps
@@ -278,9 +280,9 @@ markers.int.local.sig.specific.df <- markers.int.local.sig.specific %>% dplyr::s
 
 
 
-################################################################
+
 ## Find conserved markers in matched inferred phases
-################################################################
+
 
 DefaultAssay(S.O.integrated) <- 'RNA'
 Idents(S.O.integrated) <- 'cell.cycle.phase'
@@ -315,13 +317,13 @@ cons.markers.phases.sig.cc <- inner_join(cons.markers.phases.sig.df, cell.cycle.
                                          by = c("gene" ,"GeneID", "phase", "spp"))
 
 
-################################################################
+##################################################################
 # second approach of finding conserved and spp specific markers
-################################################################
 
-## looking at the intersection and differences 
 
-markers.sig <- readRDS('./input/all.markers.sig.cell.cycle.phase.list.rds')
+## looking at the intersection and differences in each phase across species
+
+markers.sig <- readRDS('./rds/all.markers.sig.cell.cycle.phase.list.rds')
 clusters <-  c('G', 'SM', 'MC', 'C')
 spps <- c('Bbig', 'Bbov', 'Bdiv_cow', 'Bdiv_human')
 titles <- c("B. big", "B. bov", "B. div (cow)", "B. div (human)")
@@ -380,7 +382,7 @@ listforVenn <- lapply(1:length(clusters), function(i){
 })
 
 
-#saveRDS(listforVenn, "./output/cell_cycle_markers_shared_across_speciies_Venn_diag.rds")
+saveRDS(listforVenn, "./rds/cell_cycle_markers_shared_across_speciies_Venn_diag.rds")
 
 ps <- lapply(1:length(clusters), function(i){
   
@@ -425,13 +427,14 @@ XX.diff <- XX %>% rowwise() %>%
 spp.specific.markers <- XX.diff %>% select(spp, phase, spp.genes,num.spp.genes)
 
 spp.specific.markers$phase <- factor(spp.specific.markers$phase, levels = c('G', 'SM', 'MC', 'C'))
-#saveRDS(spp.specific.markers, "./input/spp.specific.markers_second_approach.rds")
+saveRDS(spp.specific.markers, "./Input/spp.specific.markers_second_approach.rds")
 
 
-################################################################
+#####
+## Identifying host specific markers
+#####
+
 ##  Bdiv_human vs Bdiv_cow: Phase_based
-################################################################
-
 
 DefaultAssay(S.O.integrated) <- 'RNA'
 Idents(S.O.integrated) <- 'spp'
@@ -449,6 +452,7 @@ contrasts.bdivs <- contrasts %>% dplyr::filter(grepl('Bdiv', ref.spp) & grepl('B
 contrasts.bdivs$phase <- gsub('.*:', '', contrasts.bdivs$ref)
 contrasts.bdivs$ref.spp<- gsub(':.*', '', contrasts.bdivs$ref)
 
+# comparison of matched phases 
 matched.DEGs.bdivs <- mclapply(1:nrow(contrasts.bdivs), function(i){
   tmp <- FindMarkers(S.O.int.bdivs, ident.1 = contrasts.bdivs$ref[i],
                      ident.2 = contrasts.bdivs$query[i], 
@@ -473,9 +477,9 @@ markers.int.local.bdivs.sig.df <- markers.int.local.bdivs.sig.cc %>%
   arrange(GeneID, desc(pct.ratio)) %>% group_by(GeneID, ref.spp) %>% slice_max(n = 1, order_by = pct.ratio)
 
 
-###############################################################
-###  human vs cow: phase based
-################################################################
+####
+###  human vs cow: phase based (Bdiv_human vs merged species in cow host)
+####
 
 DefaultAssay(S.O.integrated) <- "RNA"
 S.O.integrated@meta.data <- S.O.integrated@meta.data %>% mutate(host = ifelse( spp == "Bdiv_human", "human", "cow"))
@@ -483,6 +487,7 @@ S.O.integrated@meta.data$host.phase <- paste(S.O.integrated@meta.data$host, S.O.
 
 Idents(S.O.integrated) <- 'host.phase'
 
+# comparison of matched phases between Bdiv_human and rest of species
 makeHostMatchedContrasts <- function(S.O.integrated){
   
   objs <- as.character(unique(S.O.integrated@meta.data$host.phase))
@@ -528,9 +533,9 @@ host.markers.int.local.sig.cc <- host.markers.int.local.sig.cc %>% dplyr::select
 host.markers.int.local.sig.specific <- host.markers.int.local.sig.cc  %>%  distinct(GeneID, .keep_all = T) %>%
   arrange(GeneID, desc(pct.ratio)) %>% group_by(GeneID) %>% slice_max(n = 1, order_by = pct.ratio)
 
+## write.xlsx(host.markers.int.local.sig.specific, ./Input/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig.xlsx')
 
-
-# original cow vs human analysis before revision
+## this data will be filtered at the next step to exclude the markers that are specific to host cell 
 host.markers.int.local.sig.specific <- read.xlsx('./input/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig.xlsx')
 host.markers.int.local.sig.stats <- host.markers.int.local.sig.specific %>% group_by(phase, ref.host) %>% 
   summarise(genes = list(GeneID), num.deg = n())
@@ -538,36 +543,6 @@ host.markers.int.local.sig.stats <- host.markers.int.local.sig.specific %>% grou
 host.markers.int.local.sig.stats$phase <- factor(host.markers.int.local.sig.stats$phase, levels = c('G', 'SM', 'MC', 'C'))
 host.markers.int.local.sig.stats$ref.host <- factor(host.markers.int.local.sig.stats$ref.host, levels = c('cow', 'human'))
 colnames(host.markers.int.local.sig.stats) <- gsub("ref.host", "host", colnames(host.markers.int.local.sig.stats))
-
-
-p <-  ggplot(host.markers.int.local.sig.stats, aes(x=num.deg, y=host, fill = host,  color = host)) +
-  geom_bar(stat="identity", size = 2, width = 0.75, alpha = 0.4, aes(fill=host))+
-  scale_fill_manual(values = c('cow' = 'darkgoldenrod', 'human' = 'darkolivegreen4'))+
-  scale_color_manual(values = c('cow' = 'darkgoldenrod', 'human' = 'darkolivegreen4'))+
-  geom_text(aes(label=num.deg), hjust= 1.15, color="black", size=10, fontface = 'bold')+
-  theme_bw()+
-  facet_grid(phase~., scales = "free", space='free',switch = "y",labeller=label_wrap_gen(multi_line = TRUE))+
-  theme(#axis.text.x = element_blank(),
-    axis.text.x = element_text(face="bold", size = 20, color = "black", angle=0, hjust = 1),
-    axis.title = element_blank(),
-    #axis.title.y = element_text(size=24, face="bold"),
-    axis.title.x = element_text(size=24, face="bold"),
-    #axis.text.y = element_text(face="bold", size=12, angle=0),
-    axis.text.y = element_blank())+
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
-        panel.spacing = unit(0.5, "lines"),
-        strip.background = element_blank(),
-        strip.text = element_text(face = "bold", size = 24,  angle = 0), 
-        strip.placement = "outside")+
-  theme(axis.line = element_line(color = 'black'), 
-        axis.ticks = element_blank())+
-  theme(legend.text = element_text(face = "bold", size = 20),
-        legend.title = element_text(face = "bold", size = 22))+
-  theme(strip.text.y.left = element_text(angle = 0))
-
-p
 
 
 
@@ -639,6 +614,9 @@ host.markers.int.local.sig.specific <- read.xlsx('./Input/bdiv_human_vs_all_spp_
 host.stat <- host.markers.int.local.sig.specific %>% group_by(ref.host, phase) %>% summarise(genes= list(GeneID), total = n())
 host.stat$direction <- "up"
 
+
+## removing DE genes in Bdiv_cow vs Bbig , Bdiv_cow vs Bbov 
+
 XX <- full_join(host.stat, cow.spp.stat, by = "phase") %>% rowwise() %>%
   mutate(overlap = length(intersect(unlist(genes.x), unlist(genes.y))), 
          overlap.genes = list(intersect(unlist(genes.x), unlist(genes.y))),
@@ -664,7 +642,7 @@ XX.human.cow.up$phase <- factor(XX.human.cow.up$phase, levels = c('G', 'SM', 'MC
 XX.human.cow.up$ref.host.x <- factor(XX.human.cow.up$ref.host.x, levels = c('cow', 'human'))
 colnames(XX.human.cow.up) <- gsub("ref.host", "host", colnames(XX.human.cow.up))
 
-saveRDS(XX.human.cow.up, "./input/human_vs_cow.rds")
+saveRDS(XX.human.cow.up, "./Input/human_vs_cow.rds")
 
 # plot
 p <-  ggplot(XX.human.cow.up, aes(x=num.diff.genes, y=host.x, fill = host.x,  color = host.x)) +
@@ -707,10 +685,11 @@ colnames(final.tab) <- gsub("\\.x", "", colnames(final.tab))
 View(final.tab) # for SI tab
 
 
-#write.xlsx(host.markers.int.local.sig.specific.filt, './input/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig_filtered_cow_spp_markers_rev.xlsx')
+#write.xlsx(host.markers.int.local.sig.specific.filt, './rds/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig_filtered_cow_spp_markers_rev.xlsx')
 
-host.markers.int.local.sig.specific.filt <- read.xlsx('./input/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig_filtered_cow_spp_markers_rev.xlsx')
-saveRDS(host.markers.int.local.sig.specific.filt, "./input/human_vs_cow.rds")
+host.markers.int.local.sig.specific.filt <- read.xlsx('./rds/bdiv_human_vs_all_spp_in_cow_phase_based_markers_sig_filtered_cow_spp_markers_rev.xlsx')
+saveRDS(host.markers.int.local.sig.specific.filt, "./Input/human_vs_cow.rds")
+
 host.markers.int.local.sig.stats.filt <- host.markers.int.local.sig.specific.filt %>% group_by(phase, ref.host) %>% 
   summarise(genes = list(GeneID), num.deg = n())
 
@@ -721,7 +700,7 @@ colnames(host.markers.int.local.sig.stats.filt) <- gsub("ref.host", "host", coln
 host.markers.int.local.filt.top <- host.markers.int.local.sig.specific.filt %>% group_by(ref.host) %>% 
   slice_max(n = 1, order_by = avg_log2FC.x)
 
-# feature plot
+# feature plot of top markers
 
 S.O.integrated[['pca']]@cell.embeddings[,2] = -S.O.integrated[['pca']]@cell.embeddings[,2]
 S.O.integrated[['pca']]@cell.embeddings[,1] = -S.O.integrated[['pca']]@cell.embeddings[,1]
@@ -761,7 +740,7 @@ Idents(S.O.integrated) <- 'host.phase'
 
 top.markers <- host.markers.int.local.filt.top$GeneID
 
-# violin plot
+# violin plot of top markers
 p <- VlnPlot(subset(S.O.integrated, idents = c('cow:C', 'human:C')), features = gsub('_', '-', top.markers))
 
 pp <- lapply(1:length(unique(top.markers)), function(i){
