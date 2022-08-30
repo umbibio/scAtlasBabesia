@@ -94,12 +94,6 @@ processCountBabs <- function(input.dir, filename, down.sample = T){
   }
   
   
-  #VlnPlot(S.O, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 3)
-  #FeatureScatter(S.O, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
-  #cutoffs <- quantile(S.O$nCount_RNA, probs = c(0.01, 0.9))
-  #print(cutoffs)
-  #S.O <- subset(S.O, subset = nFeature_RNA > cutoffs[1] & nFeature_RNA < cutoffs[2] )
-  
  
   S.O <- prep_S.O(S.O)
   
@@ -121,7 +115,7 @@ processCountBabs <- function(input.dir, filename, down.sample = T){
   }
   
   S.O.obj <- paste(paste("S.O", spp, sep = "."), "rds", sep = ".")
-  S.O.dir <- paste('../Input/compScBabesia/rds_rev2/' , S.O.obj, sep = "")
+  S.O.dir <- paste('./input/' , S.O.obj, sep = "")
   saveRDS(S.O, S.O.dir)
   
   L <- list(pheno = pheno, S.O = S.O)
@@ -141,7 +135,7 @@ for(i in 1:num.total.files){
 }
 
 names(S.O.list) <- c('bbig', 'bbov', 'bdiv_cow', 'bdiv_human', 'bmic')
-saveRDS(S.O.list, '../Input/compScBabesia/rds_rev2/S.O.list.rds')
+saveRDS(S.O.list, './input/S.O.list.rds')
 
 
 ### Working with orthologous genes only
