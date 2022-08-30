@@ -129,8 +129,8 @@ names(top.markers) <- names(markers.sig)
 
 B.big.ph.bnd <- c(0, 2.5, 6.75, 8.25, 11.35, 12)
 B.bov.ph.bond <- c(0, 2.25, 7.5 , 8.25, 11.35, 12)
-B.div.cow.ph.bond <- c(0, 2.75, 7.30, 8.75, 11.35, 12)
-B.div.hum.ph.bond <- c(0, 2.25, 6.75, 8.75, 11.35 ,12)
+B.div.cow.ph.bond <- c(0, 2.75, 7.15, 8.60, 11.35, 12)
+B.div.hum.ph.bond <- c(0, 2.25, 6.75, 8.60, 11.35 ,12)
 
 ph.trans <- list(B.big.ph.bnd, B.bov.ph.bond, B.div.cow.ph.bond, B.div.hum.ph.bond)
 names(ph.trans) <- names(sc.tc.fits)
