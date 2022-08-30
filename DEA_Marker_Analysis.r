@@ -2,12 +2,10 @@
 ## Marker analysis
 
 library(Seurat)
-#library(gam)
-#library(princurve)
+library(princurve)
 library(parallel)
 library(tidyverse)
-#library(MyEllipsefit)
-#library(sctransform)
+library(MyEllipsefit)
 library(openxlsx)
 library(ggplot2)
 library(ggfortify)
@@ -18,13 +16,11 @@ library(matrixStats)
 library(tidytext)
 library(RColorBrewer)
 library(parallel)
-#library(ComplexHeatmap)
-#library(circlize)
 library(ggVennDiagram)
 
 source('./util_funcs.R')
 
-## functions 
+## helper functions 
 
 makeMatchedContrasts <- function(S.O.integrated){
   
@@ -133,7 +129,7 @@ getCurvePeakLoc <- function(t, y){
 }
 
 
-## read files 
+## read product description and ortholog files 
 
 prod.desc <- read.xlsx('./input/BDiv_Prod_desc.xlsx')
 prod.desc <- prod.desc %>% transmute(GeneID = Gene.ID, ProductDescriptionBdiv = Product.Description) %>% distinct()
@@ -144,9 +140,9 @@ colnames(toxo.bdiv.orth) <- c('GeneID_Toxo', 'GeneID', 'ProductDescriptionToxo')
 
 num.cores <- detectCores()
 
-############
-
+################################################################
 ## cell cycle marker analysis done per spp (no common genes)
+################################################################
 
 S.O.integrated.list <- readRDS("./input/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds")
 markers.sig.list <- lapply(S.O.integrated.list, function(S.O) {
@@ -179,9 +175,10 @@ all.markers.sig.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(g
 #saveRDS(all.markers.sig.stat, './input/all.markers.sig.cell.cycle.phase.RData')
 
 
-##################
+################################################################
 ## Doing diff exp using anchored datasets
 ## Orthologs S.Os after  integration
+################################################################
 
 S.O.integrated <- readRDS('./input/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds')
 spps <- names(S.O.integrated)
@@ -240,8 +237,10 @@ cell.cycle.markers.sig <- left_join(cell.cycle.markers.sig, toxo.bdiv.orth, by='
 
 
 
-###############
+################################################################
 ## Cross spp differential expression: Phase-based unique markers
+################################################################
+
 ## spp specific cell cycle markers 
 ## Identity based comparison. EX: compare C to C accross all spps
 ## ident.1 case, ident.2 is control
@@ -279,8 +278,9 @@ markers.int.local.sig.specific.df <- markers.int.local.sig.specific %>% dplyr::s
 
 
 
-################ 
+################################################################
 ## Find conserved markers in matched inferred phases
+################################################################
 
 DefaultAssay(S.O.integrated) <- 'RNA'
 Idents(S.O.integrated) <- 'cell.cycle.phase'
@@ -666,6 +666,7 @@ colnames(XX.human.cow.up) <- gsub("ref.host", "host", colnames(XX.human.cow.up))
 
 saveRDS(XX.human.cow.up, "./input/human_vs_cow.rds")
 
+# plot
 p <-  ggplot(XX.human.cow.up, aes(x=num.diff.genes, y=host.x, fill = host.x,  color = host.x)) +
   geom_bar(stat="identity", size = 2, width = 0.75, alpha = 0.4, aes(fill=host.x))+
   scale_fill_manual(values = c('cow' = 'darkgoldenrod', 'human' = 'darkolivegreen4'))+
@@ -720,7 +721,7 @@ colnames(host.markers.int.local.sig.stats.filt) <- gsub("ref.host", "host", coln
 host.markers.int.local.filt.top <- host.markers.int.local.sig.specific.filt %>% group_by(ref.host) %>% 
   slice_max(n = 1, order_by = avg_log2FC.x)
 
-#### feature plot
+# feature plot
 
 S.O.integrated[['pca']]@cell.embeddings[,2] = -S.O.integrated[['pca']]@cell.embeddings[,2]
 S.O.integrated[['pca']]@cell.embeddings[,1] = -S.O.integrated[['pca']]@cell.embeddings[,1]
@@ -760,7 +761,7 @@ Idents(S.O.integrated) <- 'host.phase'
 
 top.markers <- host.markers.int.local.filt.top$GeneID
 
-
+# violin plot
 p <- VlnPlot(subset(S.O.integrated, idents = c('cow:C', 'human:C')), features = gsub('_', '-', top.markers))
 
 pp <- lapply(1:length(unique(top.markers)), function(i){
