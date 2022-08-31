@@ -1,6 +1,4 @@
 
-## Cluster Curves accordiing to Toxo Cell cycle phases
-
 library(Seurat)
 library(openxlsx)
 library(ggplot2)
@@ -82,8 +80,8 @@ names(sc.tc.mus) <- names(sc.tc.fits)
 
 
 # read time course Bdiv Bulk rna 
-sync.tc.df <- readRDS('../Input/compScBabesia/RData_new/bd_sync_tc_df.RData')
-sync.tc.fit <- readRDS('../Input/compScBabesia/RData_new/bd_sme_fits_sync_tc_20min.RData')
+sync.tc.df <- readRDS('./rds/bd_sync_tc_df.RData')
+sync.tc.fit <- readRDS('./rds/bd_sme_fits_sync_tc_20min.RData')
 
 
 sync.tc.mu <- smoothSplineSmeFits(sync.tc.fit, unique(sync.tc.df$variable), extend = F)
@@ -234,11 +232,6 @@ sc.tc.mus.scale.df <- lapply(1:length(sc.tc.mus.scale.phase), function(i){
 
 names(sc.tc.mus.scale.df) <- names(sc.tc.mus.scale)
 
-
-
-saveRDS(sc.tc.mus.scale.df,'./Input/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.rds')
-
-#sc.tc.mus.scale.df <- readRDS('./Input/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.rds')
 
 # plot
 
