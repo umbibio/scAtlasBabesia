@@ -1,0 +1,1436 @@
+---
+title: "Fiigures"
+output: html_document
+date: "2022-08-27"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load libs, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(openxlsx)
+library(ggplot2)
+library(ggfortify)
+library(jcolors)
+require(gridExtra)
+library(grid)
+library(matrixStats)
+library(tidyverse)
+library(tidytext)
+library(RColorBrewer)
+library(parallel)
+library(ComplexHeatmap)
+library(circlize)
+library(MyEllipsefit)
+library(princurve)
+library(Seurat)
+library(gam)
+library(princurve)
+library(parallel)
+library(tidyverse)
+library(MyEllipsefit)
+library(sctransform)
+library(openxlsx)
+library(ggplot2)
+library(ggfortify)
+library(jcolors)
+require(gridExtra)
+library(grid)
+library(matrixStats)
+library(tidytext)
+library(RColorBrewer)
+library(parallel)
+library(ComplexHeatmap)
+library(circlize)
+
+source('./util_funcs.R')
+```
+
+## Figure 1 left panel.
+```{r}
+
+pcaMataData.alldata <- readRDS("./rds/pcaMataData.alldata.rds")
+
+p1  <- ggplot(pcaMataData.alldata, aes(x= UMAP_1,y=UMAP_2)) +
+  geom_point(aes(
+    fill = spp,
+    color = spp, 
+  ), 
+  alpha = 0.4,
+  shape=21, size = 1)+ 
+  scale_color_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                                'BDiv_Human' = 'darkolivegreen4')) +
+  scale_fill_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                               'BDiv_Human' = 'darkolivegreen4')) +
+  
+  theme_bw(base_size = 14) +
+  theme(legend.position = "right") +
+  ylab('UMAP2') + xlab('UMAP1') +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, size = 12, face="bold")) +
+  theme(axis.text.y = element_text(angle = 0, hjust = 1, size = 12, face="bold")) +
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  theme(
+    plot.title = element_text(size=14, face = "bold.italic", color = 'red'),
+    axis.title.x = element_text(size=14, face="bold", hjust = 1),
+    axis.title.y = element_text(size=14, face="bold")
+  ) + 
+  theme(legend.position = c(0.15, 0.85),
+        legend.title = element_text(colour="black", size=12, 
+                                    face="bold"),
+        legend.text = element_text(colour="black", size=12, 
+                                   face="bold"))
+
+
+plot(p1)
+
+```
+
+
+## Figure 1 right panel. (top, middle, bottom)
+```{r}
+
+pcaMataData.alldata <- readRDS("./rds/pcaMataData.alldata.rds")
+
+p2  <- ggplot(pcaMataData.alldata, aes(x = PC_1, y = PC_2)) +
+  geom_point(aes(#fill = lable.prob,
+    fill = spp,
+    color = spp, 
+  ), 
+  alpha = 0.4,
+  shape=21, size = 1)+ 
+  scale_color_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                                'BDiv_Human' = 'darkolivegreen4')) +
+  scale_fill_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                               'BDiv_Human' = 'darkolivegreen4')) +
+  theme_classic() +
+  ylab('PC2') + xlab('PC1') +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, size = 18, face="bold")) +
+  theme(axis.text.y = element_text(angle = 0, hjust = 1, size = 18, face="bold")) +
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  theme(
+    plot.title = element_text(size=14, face = "bold.italic", color = 'red'),
+    axis.title.x = element_text(size=20, face="bold", hjust = 1),
+    axis.title.y = element_text(size=20, face="bold")
+  ) + 
+  theme(legend.position = "none",
+        legend.title = element_text(colour="black", size=12, 
+                                    face="bold"),
+        legend.text = element_text(colour="black", size=12, 
+                                   face="bold"))
+
+
+plot(p2)
+
+p3  <- ggplot(pcaMataData.alldata, aes(x= PC_1,y=PC_3)) +
+  geom_point(aes(#fill = lable.prob,
+    fill = spp,
+    color = spp, 
+  ), 
+  alpha = 0.4,
+  shape=21, size = 1)+ 
+  scale_color_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                                'BDiv_Human' = 'darkolivegreen4')) +
+  scale_fill_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                               'BDiv_Human' = 'darkolivegreen4')) +
+  
+  theme_classic() +
+  theme(legend.position = "right") +
+  ylab('PC3') + xlab('PC1') +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, size = 18, face="bold")) +
+  theme(axis.text.y = element_text(angle = 0, hjust = 1, size = 18, face="bold")) +
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  theme(
+    plot.title = element_text(size=14, face = "bold.italic", color = 'red'),
+    axis.title.x = element_text(size=20, face="bold", hjust = 1),
+    axis.title.y = element_text(size=20, face="bold")
+  ) + 
+  theme(legend.position = "none",
+        legend.title = element_text(colour="black", size=12, 
+                                    face="bold"),
+        legend.text = element_text(colour="black", size=12, 
+                                   face="bold"))
+
+
+plot(p3)
+
+
+
+
+p4  <- ggplot(pcaMataData.alldata, aes(x= PC_2,y=PC_3)) +
+  geom_point(aes(#fill = lable.prob,
+    fill = spp,
+    color = spp, 
+  ), 
+  alpha = 0.4,
+  shape=21, size = 1)+ 
+  scale_color_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                                'BDiv_Human' = 'darkolivegreen4')) +
+  scale_fill_manual(values = c("BBig" = "firebrick","BBov" ="darkorchid3", 'BDiv_Cow' = 'darkslateblue', 
+                               'BDiv_Human' = 'darkolivegreen4')) +
+  
+  theme_classic() +
+  theme(legend.position = "right") +
+  ylab('PC3') + xlab('PC2') +
+  theme(axis.text.x = element_text(angle = 0, hjust = 1, size = 18, face="bold")) +
+  theme(axis.text.y = element_text(angle = 0, hjust = 1, size = 18, face="bold")) +
+  theme(strip.background = element_rect(colour="black", fill="white",
+                                        size=0.5, linetype="solid")) +
+  theme(
+    plot.title = element_text(size=14, face = "bold.italic", color = 'red'),
+    axis.title.x = element_text(size=20, face="bold", hjust = 1),
+    axis.title.y = element_text(size=20, face="bold")
+  ) + 
+  theme(legend.position = "none",
+        legend.title = element_text(colour="black", size=12, 
+                                    face="bold"),
+        legend.text = element_text(colour="black", size=12, 
+                                   face="bold"))
+
+
+plot(p4)
+
+```
+
+
+
+
+## Figute 2A
+
+
+```{r, echo=FALSE}
+
+S.O.itegrated <- readRDS('./rds/S.O.integrated.list.pstime.GAM.intersect.rds')
+
+## cells projected to eliiptic curve
+L <- wiskerPlot(S.O.itegrated$bdiv_human)
+plot(x = -15:15, y = -15:15, type = 'n', xlab = 'PC1', ylab = 'PC2', cex.lab = 1.3)
+whiskers(as.matrix(L$pc[,c(1,2)]), L$fit$s, col = "gray")
+
+```
+
+
+## Figute 2B
+
+```{r, echo=FALSE}
+L2 <- readRDS('./rds/all_pstime_fits_L2.rds')
+
+## Lag time distribution
+dd <- density(L2$bdiv_human$dd$lag,bw = 2.8)
+dd <- data.frame(lag = dd$x,  density = dd$y)
+
+p1 <- ggplot(dd, aes(x=lag, y = density)) + 
+  theme_bw() + 
+  theme(axis.text.x = element_text(face="bold", size=12),
+        axis.text.y = element_text(face="bold", size = 12),
+        axis.title = element_text(face="bold", size = 12)) +
+  geom_vline(xintercept = dd$lag[which.max(dd$density)], linetype='dashed', color='red') + 
+  geom_line(colour="black")
+
+plot(p1)
+
+```
+
+## fig 2c
+
+```{r echo=FALSE}
+bdiv_human_meta_data <- readRDS("./rds/Bdiv_human_pca_fitter_curv_start_point.rds")
+
+p <- ggplot(bdiv_human_meta_data, aes(x=PC_1,y=PC_2)) +
+  geom_point(aes(fill = phase, color =  phase), shape=21, size = 1)+ 
+  scale_color_manual(values=c("G" = "#1b5878", "SM" = "#c44237", "MC" = "#ad8842","C" = "#e99093"))+
+  scale_fill_manual(values=c("G" = "#1b5878", "SM" = "#c44237", "MC" = "#ad8842","C" = "#e99093"))+
+  geom_path(aes(x=sc1[cell.ord],y=sc2[cell.ord]), col = 'black', size = 1.5, 
+            arrow = arrow(type = "open", angle = 30, ends = "first",length = unit(0.25, "inches"))) +
+  geom_point(aes(x=sc1[order(adj.time)][1],y=sc2[order(adj.time)][1]), col = 'black',fill = "black", 
+             shape=21, size = 7, stroke = 1.5)+
+  theme_bw(base_size = 14) +
+  theme(axis.text.y = element_text( size = 16, face="bold", color = "black"),
+        axis.text.x = element_text(size = 16, face="bold", color = "black"),
+        plot.title = element_text(size=18, face = "bold.italic", color = 'black', hjust = 0.5),
+        axis.title.x = element_text(size=18, face="bold"),
+        axis.title.y = element_text(size=18, face="bold"),
+        legend.title  = element_text(size = 18, face = "bold"),
+        legend.text = element_text(size =  "16", face = "bold", color = "black"),
+        strip.background = element_rect(colour="black", fill="white",size=0.5, linetype="solid")) +
+  ylab('PC2') + xlab('PC1') +
+  ggtitle("Bdiv_human") 
+
+plot(p)
+
+```
+
+
+## Figure 3
+
+```{r echo=FALSE}
+
+```
+
+
+
+## Figure 4A 
+
+```{r echo=FALSE}
+#all.markers.sig.cell.cycle.phase.rds
+markers.sig <- readRDS('./rds/all.markers.sig.cell.cycle.phase.rds')
+
+clusters <-  c('G', 'SM', 'MC', 'C')
+spps <- c('Bbig', 'Bbov', 'Bdiv_cow', 'Bdiv_human')
+titles <- c("B. big", "B. bov", "B. div (cow)", "B. div (human)")
+
+for(i in 1:length(titles)){
+  markers.sig[[i]]$markers.sig$spp <- spps[i]
+}
+
+all.markers.sig <- do.call(Map, c(f = rbind, markers.sig))
+all.markers.sig <- all.markers.sig$markers.sig
+all.markers.sig$spp <-  factor(all.markers.sig$spp, levels = c('Bbig', 'Bbov', 'Bdiv_cow', 'Bdiv_human'))
+names(all.markers.sig) <- gsub("cluster", "phase", names(all.markers.sig))
+all.markers.sig$phase <- factor(all.markers.sig$phase, levels = c('G', 'SM', 'MC', 'C'))
+all.markers.sig.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(num.deg = n()) 
+
+p <- ggplot(all.markers.sig.stat, aes(x=phase, y=num.deg, fill = phase, color = phase)) +
+  geom_bar(stat="identity",size = 2, width = 0.75, aes(fill = phase))+
+  scale_color_manual(values = c('G' = "#1b5878","SM" ="#c44237",'MC' = '#ad8842', 'C' = '#e99093'))+
+  scale_fill_manual(values = c('G' = "#758FA2","SM" = "#D4807F",'MC' = "#C3AE85", 'C' = "#EAADAF"))+
+  geom_text(aes(label=num.deg), vjust=1.15, color="black", size=5, fontface = 'bold')+
+  facet_grid(. ~ spp, scales = "free", space='free',labeller=label_wrap_gen(multi_line = TRUE))+
+  theme_bw()+
+  theme(
+    axis.text.x = element_blank(),
+    #axis.text.y = element_text(size = 10),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"))+
+  theme(strip.background=element_rect(fill='white', color = 'black'),
+        panel.spacing = unit(1.5, "lines"), 
+        strip.text.x=element_text(angle=0, hjust=0.5,vjust=0.5, size = 14,face = 'bold'),
+        plot.title = element_text(size=16, face = "bold.italic", color = 'black'),
+        axis.title.x = element_text(size=12, face="bold"),
+        axis.title.y = element_text(size=12, face="bold"))+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        strip.text = element_text(face = "bold", size = 24,  angle = 0), 
+        strip.placement = "outside") +
+  theme(legend.text = element_text(face = "bold", size = 10),
+        legend.title = element_text(face = "bold", size = 14))+
+  theme(panel.spacing = unit(1.5, "lines")) 
+#theme(legend.position = "none")
+
+p
+
+
+
+```
+
+
+## Figure 4B
+
+
+```{r}
+
+markers.sig <- readRDS('./rds/all.markers.sig.cell.cycle.phase.rds')
+
+clusters <-  c('G', 'SM', 'MC', 'C')
+spps <- c('Bbig', 'Bbov', 'Bdiv_cow', 'Bdiv_human')
+titles <- c("B. big", "B. bov", "B. div (cow)", "B. div (human)")
+
+for(i in 1:length(titles)){
+  markers.sig[[i]]$markers.sig$spp <- spps[i]
+}
+
+all.markers.sig <- do.call(Map, c(f = rbind, markers.sig))
+all.markers.sig <- all.markers.sig$markers.sig
+all.markers.sig$spp <-  factor(all.markers.sig$spp, levels = c('Bbig', 'Bbov', 'Bdiv_cow', 'Bdiv_human'))
+names(all.markers.sig) <- gsub("cluster", "phase", names(all.markers.sig))
+all.markers.sig$phase <- factor(all.markers.sig$phase, levels = c('G', 'SM', 'MC', 'C'))
+all.markers.sig.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(num.deg = n()) 
+
+all.markers.stacked <- all.markers.sig.stat %>% group_by(spp) %>% mutate(num.spp.total.markers = sum(num.deg))
+all.markers.stacked <- all.markers.stacked %>% rowwise() %>% mutate(prop.phase.spp = num.deg / num.spp.total.markers)
+
+p <- ggplot(all.markers.stacked, aes(x=phase, y=prop.phase.spp, fill = spp)) +
+  geom_bar(stat="identity", position = "stack", size = 1, width = 0.75, aes(fill = spp, color = spp))+
+  scale_fill_manual(values =c("Bbig" = "#E8B5B4","Bbov" ="#D09FE9",
+                              'Bdiv_cow' = "#BFB9D6", 'Bdiv_human' = "#CED5BD"))+
+  scale_color_manual(values = c("Bbig" = "firebrick","Bbov" ="darkorchid3",
+                                'Bdiv_cow' = 'darkslateblue', 'Bdiv_human' = 'darkolivegreen4'))+
+  geom_text(aes(label= round(prop.phase.spp, digits = 2)),
+                position = position_stack(vjust = 0.5), color="black", size=6, fontface = 'bold')+
+  theme_bw()+
+  theme(
+    axis.text.x = element_text(size = 10, face = "bold", color = "black"),
+    axis.text.y = element_text(size = 10, face = "bold", color = "black"),
+    axis.ticks = element_blank(),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"),
+    plot.title = element_text(size=14, face = "bold.italic", color = 'black')) +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #panel.border = element_blank()
+        ) +
+  theme(legend.text = element_text(face = "bold", size = 14),
+        legend.title = element_text(face = "bold", size = 14),
+        #legend.justification = c(0.9, 0.9), legend.position = c(0.9, 0.9)
+        legend.position = "none") +
+  ylab("proportion")
+  
+
+
+plot(p)
+
+```
+
+
+## Figure 4c
+
+```{r}
+cons.markers.phases.sig.cc <- readRDS("./rds/conserved_markers_cross_spp_phase_based.rds")
+
+cons.markers.phases.sig.cc.stat <- cons.markers.phases.sig.cc %>% group_by(phase) %>% 
+  summarise(genes = list(GeneID), num.deg = n())
+
+
+cons.markers.phases.sig.cc.stat$phase <- factor(cons.markers.phases.sig.cc.stat$phase, levels = c('C', 'MC', 'SM', 'G'))
+p <-  ggplot(cons.markers.phases.sig.cc.stat, aes(x=num.deg, y=phase, fill = phase, color = phase)) +
+  geom_bar(stat="identity",  size = 2, width = 0.75, aes(fill = phase))+
+  scale_color_manual(values = c('G' = "#1b5878","SM" ="#c44237",
+                                'MC' = '#ad8842', 'C' = '#e99093'))+
+  scale_fill_manual(values = c('G' = "#758FA2","SM" = "#D4807F",
+                               'MC' = "#C3AE85", 'C' = "#EAADAF"))+
+  
+  geom_text(aes(label=num.deg), hjust=1.15, color="black", size=12, fontface = 'bold')+
+  theme_bw()+
+  theme(axis.text.x = element_text(face="bold", size=30, color = "black",angle=0, hjust = 1),
+        axis.text.y = element_text(face="bold", size=30, color = "black", angle=0),
+        axis.title.y = element_text(size=28, face="bold"),
+        axis.title.x = element_text(size=28, face="bold"))+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"))+
+  theme(axis.line = element_line(color = 'black'), 
+        axis.ticks = element_blank())+
+  theme(legend.text = element_text(face = "bold", size = 18),
+        legend.title = element_text(face = "bold", size = 20))+
+  theme(legend.justification = "top")+ 
+  scale_x_continuous(expand = c(0,0)) 
+p
+
+
+```
+
+## Fiigure 4D
+
+```{r echo=FALSE}
+spp.markers <- readRDS("./rds/species_specific_sig_markers_phase_based_stat.rds")
+
+p <- ggplot(spp.markers, aes(x=num.deg, y = spp, fill = spp, color = spp)) +
+  geom_bar(stat="identity", size = 2, width = 0.75, aes(fill = spp)) +
+  scale_color_manual(values = c("Bbig" = "firebrick","Bbov" = "darkorchid3",
+                                'Bdiv_cow' = 'darkslateblue', 'Bdiv_human' = 'darkolivegreen4'))+
+  scale_fill_manual(values =c("Bbig" = "#E8B5B4","Bbov" = "#D09FE9",
+                              'Bdiv_cow' = "#BFB9D6", 'Bdiv_human' = "#CED5BD"))+
+  geom_text(aes(label=num.deg), hjust= 1, color="black", size = 6, fontface = 'bold')+
+  facet_grid(phase~., scales = "free", 
+             space='free',switch = "y", labeller = label_wrap_gen(multi_line = TRUE)) +
+  theme_bw()+
+  theme(axis.text.y = element_blank(),
+        axis.text.x = element_text(face="bold", size = 20, hjust = 1, color = "black"),
+        axis.title.y = element_text(size = 24, face = "bold"),
+        axis.title.x = element_text(size = 24, face = "bold"),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold", size = 28),
+        strip.text.y.left = element_text(angle = 0),
+        strip.placement = "outside", 
+        axis.line = element_line(color = 'black'),
+        axis.ticks = element_blank(), 
+        legend.text = element_text(face = "bold", size = 20),
+        legend.title = element_text(face = "bold", size = 18)
+        )+
+  scale_x_continuous(expand = c(0,0)) 
+
+plot(p)
+
+
+```
+
+
+## Figure 5
+
+```{r}
+sc.tc.mus.scale.df <- readRDS('./rds/all_sc_tc_mus_scale_toxo_inferred_cell_cycle_phases_Marker_phases_Progression_heatmap.rds')
+titles <- c("B. big", "B. bov", "B. div (cow)", "B. div (human)")
+title.phases <- c("G1.L", "SM", "MC", "C", "G1.E")
+names(title.phases) <- c('G1.L',  'SM', 'MC', 'C','G1.E')
+ 
+
+ps <- lapply(1:length(titles), function(i){
+  
+  p <- ggplot(sc.tc.mus.scale.df[[i]], aes(x = t, reorder_within(GeneID, -peak.ord, stage ), fill = y)) +
+  
+    geom_tile() +
+    scale_x_discrete(expand=c(0,0)) +
+    ylab("Genes") + xlab("time/cells") +
+    scale_fill_gradientn(colours = viridis::inferno(10)) +
+    facet_grid(marker.phase ~ cell.cycle.phase  , scales = 'free', space = 'free',
+               labeller = labeller(cell.cycle.phase = title.phases)) + 
+    theme(
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.y = element_blank(),
+      axis.title.x = element_text(size = 20, face = "bold"),
+      legend.position = "none",
+      panel.spacing = unit(0.1, "lines"),
+      strip.background=element_rect(fill='white', color = 'black'),
+      strip.text.x  = element_text(size = 4, face = 'bold',  color = "black"),
+      strip.text.y  = element_text(size = 20, face = 'bold'),
+      #strip.text.x = element_text(margin = margin(1,0,1,0, "cm")),
+      plot.title = element_text(size=28, face = "bold.italic", color = 'black', hjust = 0.5),
+      ) + ggtitle(titles[i])
+ 
+})
+p <- grid.arrange(ps[[1]], ps[[2]], ps[[3]], ps[[4]], ncol = 4)
+
+
+```
+
+## Figure 6 A
+
+```{r}
+
+Bdiv.hum.vs.cow.markers <- readRDS("./rds/bdiv_human_vs_bdiv_cow.rds")
+Bdiv.hum.vs.cow.markers.stat <- Bdiv.hum.vs.cow.markers %>% group_by(ref.spp, phase) %>% 
+  summarise(genes = list(GeneID), num.deg = n())
+
+colnames(Bdiv.hum.vs.cow.markers.stat) <- gsub("ref.spp", "spp", colnames(Bdiv.hum.vs.cow.markers.stat))
+Bdiv.hum.vs.cow.markers.stat$phase <- factor(Bdiv.hum.vs.cow.markers.stat$phase, levels = c('G', 'SM', 'MC', 'C'))
+
+p <-  ggplot(Bdiv.hum.vs.cow.markers.stat, aes(x=num.deg, y=spp, fill = spp, color = spp)) +
+  geom_bar(stat="identity", size = 2, width = 0.75, alpha = 0.4, aes(fill=spp))+
+  scale_color_manual(values = c('Bdiv_cow' = 'darkslateblue', 'Bdiv_human' = 'darkolivegreen4'))+
+  scale_fill_manual(values = c('Bdiv_cow' = 'darkslateblue', 'Bdiv_human' = 'darkolivegreen4'))+
+  geom_text(aes(label=num.deg), hjust= 1.75, color="black", size=8, fontface = 'bold')+
+  theme_bw()+
+  facet_grid(phase~., scales = "free", space='free',switch = "y",
+             labeller=label_wrap_gen(multi_line = TRUE))+
+  theme(#axis.text.x = element_blank(),
+    axis.text.x = element_text(face="bold", size=18, angle=0, hjust = 1, color = "black"),
+    axis.title.y = element_text(size=22, face="bold"),
+    axis.title.x = element_text(size=22, face="bold"),
+    #axis.text.y = element_text(face="bold", size=12, angle=0),
+    axis.text.y = element_blank())+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold", size = 22,  angle = 0), 
+        strip.placement = "outside")+
+  theme(axis.line = element_line(color = 'black'), 
+        axis.ticks = element_blank())+
+  theme(legend.text = element_text(face = "bold", size = 18),
+        legend.title = element_text(face = "bold", size = 20))+
+  theme(strip.text.y.left = element_text(angle = 0))
+
+p
+
+
+Bdiv.hum.vs.cow.markers <- readRDS("./rds/bdiv_human_vs_bdiv_cow.rds")
+markers.int.local.bdivs.sig.top <- Bdiv.hum.vs.cow.markers %>% group_by(ref.spp) %>% slice_max(n = 1, order_by = avg_log2FC.x)
+
+
+S.O.integrated <- readRDS('./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase_sinlge_obj.rds')
+DefaultAssay(S.O.integrated) <- 'RNA'
+Idents(S.O.integrated) <- 'spp'
+
+S.O.int.bdivs <- subset(S.O.integrated, ident = c('Bdiv_human', 'Bdiv_cow'))
+DefaultAssay(S.O.int.bdivs) <- 'RNA'
+Idents(S.O.int.bdivs) <- 'phase.spp'
+
+S.O.int.bdivs@meta.data <- S.O.int.bdivs@meta.data %>% mutate(host = ifelse( spp == "Bdiv_human", "Bdiv_human", "Bdiv_cow"))
+S.O.int.bdivs[['pca']]@cell.embeddings[,2] = -S.O.int.bdivs[['pca']]@cell.embeddings[,2]
+S.O.int.bdivs[['pca']]@cell.embeddings[,1] = -S.O.int.bdivs[['pca']]@cell.embeddings[,1]
+
+p <- FeaturePlot(object = S.O.int.bdivs, 
+                 features = rev.default(markers.int.local.bdivs.sig.top$gene.x), label = F,repel = F,
+                 #shape.by  = 'spp',
+                 split.by = 'host',
+                 cols = c("grey", "blue"), reduction = "pca")
+
+plot(p)
+
+
+DefaultAssay(S.O.int.bdivs) <- 'RNA'
+Idents(S.O.int.bdivs) <- 'spp'
+S.O.int.bdivs@meta.data$spp <- factor(S.O.int.bdivs@meta.data$spp, levels = c("Bdiv_cow", "Bdiv_human"))
+top.markers <- markers.int.local.bdivs.sig.top$GeneID
+
+p <- VlnPlot(S.O.int.bdivs, features = gsub('_', '-', top.markers))
+
+pp <- lapply(1:2, function(i){
+  
+  plt <- p[[i]] + 
+    scale_fill_manual(values = c('Bdiv_cow' = 'darkslateblue', 'Bdiv_human' = 'darkolivegreen4'))+
+    theme(axis.text.x  = element_text(face = "bold", size = 16, angle = 0, hjust = 0.5),
+          axis.text.y  = element_text(face = "bold", size = 18),
+          axis.title.x = element_blank(), 
+          axis.title.y = element_text(face = "bold", size = 20),
+          plot.title = element_text(face = "bold", size = 20)) + 
+    ylab("expr")
+  
+})
+
+p2 <- grid.arrange(pp[[2]], pp[[1]], ncol = 1)
+
+
+```
+
+## Figure 6 B
+
+```{r}
+host.markers.int.local.sig.specific.filt <- readRDS("./rds/human_vs_cow.rds")
+
+host.markers.int.local.sig.stats.filt <- host.markers.int.local.sig.specific.filt %>% 
+  group_by(phase, ref.host) %>% 
+  summarise(genes = list(GeneID), num.deg = n())
+
+host.markers.int.local.sig.stats.filt$phase <- factor(host.markers.int.local.sig.stats.filt$phase, 
+                                                      levels = c('G', 'SM', 'MC', 'C'))
+host.markers.int.local.sig.stats.filt$ref.host <- factor(host.markers.int.local.sig.stats.filt$ref.host, 
+                                                         levels = c('cow', 'human'))
+colnames(host.markers.int.local.sig.stats.filt) <- gsub("ref.host", "host",
+                                                        colnames(host.markers.int.local.sig.stats.filt))
+
+host.markers.int.local.filt.top <- host.markers.int.local.sig.specific.filt %>% group_by(ref.host) %>% 
+  slice_max(n = 1, order_by = avg_log2FC.x)
+
+
+
+p <-  ggplot(host.markers.int.local.sig.stats.filt, 
+             aes(x=num.deg, y=host, fill = host,  color = host)) +
+  geom_bar(stat="identity", size = 2, width = 0.75, alpha = 0.4, aes(fill=host))+
+  scale_fill_manual(values = c('cow' = 'darkgoldenrod', 'human' = 'darkolivegreen4'))+
+  scale_color_manual(values = c('cow' = 'darkgoldenrod', 'human' = 'darkolivegreen4'))+
+  geom_text(aes(label=num.deg), hjust= 1.15, color="black", size=10, fontface = 'bold')+
+  theme_bw()+
+  facet_grid(phase~., scales = "free", space='free',switch = "y",labeller=label_wrap_gen(multi_line = TRUE))+
+  theme(#axis.text.x = element_blank(),
+    axis.text.x = element_text(face="bold", size = 20, color = "black", angle=0, hjust = 1),
+    axis.title = element_blank(),
+    #axis.title.y = element_text(size=24, face="bold"),
+    axis.title.x = element_text(size=24, face="bold"),
+    #axis.text.y = element_text(face="bold", size=12, angle=0),
+    axis.text.y = element_blank())+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold", size = 24,  angle = 0), 
+        strip.placement = "outside")+
+  theme(axis.line = element_line(color = 'black'), 
+        axis.ticks = element_blank())+
+  theme(legend.text = element_text(face = "bold", size = 20),
+        legend.title = element_text(face = "bold", size = 22))+
+  theme(strip.text.y.left = element_text(angle = 0))
+
+p
+
+
+S.O.integrated <- readRDS('./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase_sinlge_obj.rds')
+DefaultAssay(S.O.integrated) <- "RNA"
+S.O.integrated@meta.data <- S.O.integrated@meta.data %>%
+  mutate(host = ifelse( spp == "Bdiv_human", "human", "cow"))
+Idents(S.O.integrated) <- 'host'
+
+host.markers.int.local.filt.top <- host.markers.int.local.sig.specific.filt %>% group_by(ref.host) %>% 
+  slice_max(n = 1, order_by = avg_log2FC.x)
+
+S.O.integrated[['pca']]@cell.embeddings[,2] = -S.O.integrated[['pca']]@cell.embeddings[,2]
+S.O.integrated[['pca']]@cell.embeddings[,1] = -S.O.integrated[['pca']]@cell.embeddings[,1]
+p <- FeaturePlot(object = S.O.integrated,
+                 features = rev.default(host.markers.int.local.filt.top$gene.x), label = F,repel = F,
+                 #shape.by  = 'spp',
+                 split.by = 'host',
+                 cols = c("grey", "blue"), reduction = "pca")
+
+p
+
+
+DefaultAssay(S.O.integrated) <- "RNA"
+S.O.integrated@meta.data <- S.O.integrated@meta.data %>% mutate(host = ifelse( spp == "Bdiv_human", "human", "cow"))
+S.O.integrated@meta.data$host.phase <- paste(S.O.integrated@meta.data$host, S.O.integrated@meta.data$cell.cycle.phase, sep = ":")
+unique(S.O.integrated@meta.data$host.phase)
+Idents(S.O.integrated) <- 'host.phase'
+
+top.markers <- host.markers.int.local.filt.top$GeneID
+
+
+p <- VlnPlot(subset(S.O.integrated, idents = c('cow:C', 'human:C')), features = gsub('_', '-', top.markers))
+pp <- lapply(1:length(unique(top.markers)), function(i){
+  
+  plt <- p[[i]] + 
+    scale_fill_manual(values = c('cow:C' = 'darkgoldenrod', 'human:C' = 'darkolivegreen4'))+
+    theme(axis.text.x  = element_text(face = "bold", size = 16, angle = 0, hjust = 0.5),
+          axis.text.y  = element_text(face = "bold", size = 18),
+          axis.title.x = element_blank(), 
+          axis.title.y = element_text(face = "bold", size = 20),
+          plot.title = element_text(face = "bold", size = 20)) + 
+    ylab("expr")
+  
+  
+})
+
+p2 <- grid.arrange(pp[[2]], pp[[1]], nrow = 2)
+
+
+```
+
+
+
+
+
+
+
+## Figure 7A
+```{r}
+
+```
+
+
+
+## figure 7B
+
+
+```{r echo=FALSE}
+top.10.cons <- read.xlsx("./rds/top_10_conserved_genes_network_2_clusters.xlsx")
+top.10.cons$GeneID <- gsub("Bdiv_", "", top.10.cons$GeneID)
+df.plot <- top.10.cons
+
+p <- lapply(unique(top.10.cons$cluster), function(i){
+  tmp <- df.plot %>% dplyr::filter(cluster == i)
+  ggplot(tmp, aes(x = t, y = y, color = GeneID)) + 
+    facet_grid(spp ~ .)+
+    geom_line(size = 0.5) + 
+    theme_bw() +
+    #ggtitle(cluster.dtw[i]) +
+    theme(
+      strip.text = element_blank(),
+      strip.background = element_rect(fill = "white", colour = "black"), 
+      strip.text.y  = element_text(size = 6, face = 'bold',  color = "white"),
+      plot.title = element_text(size = 14, face = "bold.italic", hjust = 0.5), 
+      axis.title.y = element_text(size = 16, face = "bold"),
+      axis.title.x = element_text(size = 16, face = "bold"),
+      legend.title = element_text(size = 14, face = "bold"),
+      legend.text = element_text(size = 16, face = "bold"),
+      axis.text.x = element_text(size = 10, color = "black", angle = 90),
+      axis.text.y = element_text(size = 10, color = "black", angle = 0),
+      #axis.ticks.x = element_blank()
+    ) +
+    theme(strip.text.y = element_text(margin = margin(2,1,2,1, "cm")),
+          panel.spacing = unit(0.75, "lines"))+
+    ylab("expr") + xlab("time")
+  
+  
+})
+
+p2 <- do.call(grid.arrange, c(p, nrow=2))
+
+
+```
+
+## Fiigure 7C
+
+```{r}
+
+
+```
+
+## Figure 8
+
+```{r}
+
+## 8A
+epi.reg <- read.xlsx("./rds/epigenetics_regulators_dtw_clusters.xlsx")
+epi.reg$GeneID <- gsub("Bdiv_", "", epi.reg$GeneID)
+cluster.dtw <- paste("cluster", c(1:4), sep = " ")
+
+
+p <- lapply(unique(epi.reg$cluster), function(i){
+  tmp <- epi.reg %>% dplyr::filter(cluster == i)
+  ggplot(tmp, aes(x = t, y = y, color = GeneID)) + 
+    facet_grid(spp ~ .)+
+    geom_line(size = 0.5) + 
+    theme_bw() +
+    ggtitle(cluster.dtw[i]) +
+    theme(strip.background = element_rect(fill = "white", colour = "black"), 
+          strip.text.y  = element_text(size = 10, face = 'bold',  color = "black"),
+          plot.title = element_text(size = 14, face = "bold.italic", hjust = 0.5), 
+          axis.title.x = element_text(size = 14, face = "bold", color = "black"),
+          axis.title.y = element_text(size = 12, face = "bold", color = "black"),
+          legend.title = element_text(size = 12, face = "bold"),
+          legend.text = element_text(size = 11, face = "bold"),
+         axis.text.y = element_text(size = 8, face = "bold", color = "black"),
+         axis.text.x = element_text(size = 12, face = "bold", color = "black", angle = 90),
+         #axis.text.x = element_blank(),
+         legend.margin=margin(0,0,0,0))+
+    ylab("expr") + xlab("time")
+  
+  
+})
+
+grid.arrange(grobs = p, ncol = 2)
+
+
+
+## 8B
+sc.tc.mus.long.all <- read.xlsx("./rds/epigenetics_regulators_dtw_clusters.xlsx")
+
+df <- sc.tc.mus.long.all %>% select(GeneID, cluster, spp) %>%
+  distinct(GeneID, spp, cluster) %>% mutate(is.present = "yes") 
+df$cluster <- paste("cluster", df$cluster,  sep  = " ")
+
+df.wide <- df %>% pivot_wider(names_from = spp, values_from = is.present)
+df.wide[is.na(df.wide)] <- "no"
+df.lng <- df.wide %>% pivot_longer(-c(GeneID, cluster), names_to = "spp", values_to = "is.present")
+df.lng$spp <- factor(df.lng$spp, levels = c("bbig", "bbov", "bdiv_cow", "bdiv_human"))
+df.lng$cluster <- factor(df.lng$cluster, levels = paste("cluster", c(1:4), sep = " "))
+df.lng$GeneID <- gsub("Bdiv_", "", df.lng$GeneID )
+
+
+
+pp <- ggplot(df.lng, aes(x =  spp, y = GeneID, fill = is.present)) + 
+  geom_tile(aes(fill = is.present), colour = "black") + 
+  facet_grid( cluster ~ .  , scales = 'free', space = 'free') + 
+  scale_fill_manual(values = c(yes = "darkseagreen", no = "white")) + 
+  theme_bw()+
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(), 
+        axis.ticks.x  = element_blank(),
+        axis.text.x = element_text(size = 12, face = "bold", color = "black", angle = 45, hjust = 1), 
+        axis.text.y = element_text(size = 9, face = "bold", color = "black"), 
+        legend.position = "none", 
+        strip.text = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "white", color = "black"))
+
+pp
+
+
+
+```
+
+
+## downsampled vs Not-downsampled (revision)
+
+```{r}
+
+S.O.downSamp <- readRDS("./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds")
+p.list <- list()
+p.list <- lapply(1:length(S.O.downSamp), function(i){
+  
+  Idents(S.O.downSamp[[i]]) <- "cell.cycle.phase"
+  S.O.downSamp[[i]]$cell.cycle.phase <- factor(S.O.downSamp[[i]]$cell.cycle.phase,
+                                              levels = c('G', 'SM', 'MC', 'C'))
+  p.list <- DimPlot(S.O.downSamp[[i]], reduction = "pca", 
+                    pt.size = 1,
+                    cols = c(G = "#1b5878", SM = "#c44237", MC = "#ad8842", C = "#e99093" ),
+                    shape.by='spp',
+                    label = TRUE, label.size = 8) + NoLegend() + NoAxes()
+  
+})
+
+pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
+
+```
+
+
+
+```{r}
+
+S.Os.no.downSamp<- readRDS("./rds/S.O.integrated.list.pstime.GAM.indiv.cycle.phase.notDownSampled.rds")
+
+p.list <- list()
+p.list <- lapply(1:length(S.Os.no.downSamp), function(i){
+  
+  Idents(S.Os.no.downSamp[[i]]) <- "cell.cycle.phase"
+  S.Os.no.downSamp[[i]]$cell.cycle.phase <- factor(S.Os.no.downSamp[[i]]$cell.cycle.phase,
+                                              levels = c('G', 'SM', 'MC', 'C'))
+  p.list <- DimPlot(S.Os.no.downSamp[[i]], reduction = "pca", 
+                    pt.size = 1,
+                    cols = c(G = "#1b5878", SM = "#c44237", MC = "#ad8842", C = "#e99093" ),
+                    shape.by='spp',
+                    label = TRUE, label.size = 8) + NoLegend() + NoAxes()
+  
+})
+
+pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
+
+
+```
+
+
+
+## SI figure 3 top panel
+```{r}
+S.O.updated <- readRDS("./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds")
+
+
+p.list <- list()
+p.list <- lapply(1:length(S.O.updated), function(i){
+  
+  Idents(S.O.updated[[i]]) <- "cell.cycle.phase"
+  S.O.updated[[i]]$cell.cycle.phase <- factor(S.O.updated[[i]]$cell.cycle.phase,
+                                              levels = c('G', 'SM', 'MC', 'C'))
+  p.list <- DimPlot(S.O.updated[[i]], reduction = "pca", 
+                    pt.size = 1,
+                    cols = c(G = "#1b5878", SM = "#c44237", MC = "#ad8842", C = "#e99093" ),
+                    shape.by='spp',
+                    label = TRUE, label.size = 8) + NoLegend() + NoAxes()
+  
+})
+
+pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
+```
+
+## SI figure 3 bottom panel
+
+```{r }
+
+S.O.updated <- readRDS("./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds")
+
+p.list <- list()
+p.list <- lapply(1:length(S.O.updated), function(i){
+  
+  Idents(S.O.updated[[i]]) <- "seurat_clusters"
+  p.list <- DimPlot(S.O.updated[[i]], reduction = "pca", 
+                    pt.size = 1,
+                    #cols = c(G = "#1b5878", SM = "#c44237", MC = "#ad8842", C = "#e99093" ),
+                    shape.by='spp',
+                    label = TRUE, label.size = 8) + NoLegend() + NoAxes()
+ 
+})
+
+pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
+
+
+
+```
+
+
+
+## SI figure 4 A
+
+```{r}
+tg.sc.tc.mus.scale <- readRDS('./rds/atoxo.markers.heatmap.rds')
+
+titles <- "Toxo Marker Genes"
+tg.sc.tc.mus.scale$tg$phase <- factor(tg.sc.tc.mus.scale$tg$phase, levels = c('G1', 'S', 'M', 'C'))
+p <- ggplot(tg.sc.tc.mus.scale[[1]], 
+            aes(x = t, reorder_within(GeneID, -peak.ord, stage), fill = y)) +
+  geom_tile() +
+  scale_x_discrete(expand=c(0,0)) +
+  ylab("Genes") + xlab("time/cells") +
+  scale_fill_gradientn(colours = viridis::inferno(10)) +
+  facet_grid(phase ~ .  , scales = 'free', space = 'free') +
+  theme(
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_text(size = 20, face = "bold"),
+    axis.title.y = element_text(size = 20, face = "bold"),
+    legend.position = "none")+
+  theme(panel.spacing = unit(0.1, "lines"), 
+        strip.background=element_rect(fill='white', color = 'black'), 
+        strip.text.y=element_text(angle=270, hjust=0.5, size = 28,vjust=0.5, face = 'bold'))+
+  ggtitle(titles)+
+  theme(
+    plot.title = element_text(size=22, face = "bold.italic", color = 'black'),
+    axis.title.x = element_text(size=22, face="bold"),
+    axis.title.y = element_text(size=22, face="bold")
+  )
+p
+
+```
+
+
+## SI figure 4 B top panel (T.gondii)
+```{r}
+
+toxo.phase.boundaries <- readRDS("./rds/phase.boundaries_top_toxo_markers.rds")
+ph <- c(1.25, 3.4, 4.5)
+p <- ggplot(toxo.phase.boundaries, aes(x=mean.peak, color = phase)) +
+  geom_density(aes(color = phase), size = 1.5) +
+  scale_color_manual(values=c("G1" = "#1b5878", "S" = "#c44237", "M" = "#ad8842","C" = "#e99093"))+
+  theme_bw() +
+  facet_grid(spp~., scales = "free",  space='free',
+             labeller=label_wrap_gen(multi_line = TRUE)) +
+  geom_vline(xintercept = ph,linetype="dashed", size = 0.8 )+
+  # geom_vline(data = ph.trans.df.lng,  aes(xintercept = x.intercept) ,
+  #            linetype="dashed", size = 0.8) +
+  scale_x_continuous(breaks = round(seq(0,6, by = 0.5),1)) +
+  theme(
+    plot.title = element_text(size=14, face = "bold.italic", color = 'red'),
+    legend.title = element_text(size = 20, face = "bold"),
+    legend.text = element_text(size = 18, face = "bold"),
+    axis.text.x = element_text(size = 20, angle = 90, vjust = 0.45, color = "black"),
+    axis.text.y = element_text(size = 20, color = "black"),
+    axis.title = element_text(size = 28, color = "black", face = "bold"),
+    strip.background = element_rect(fill = "white"),
+    strip.text = element_text(color = "black", size = 30)
+  ) +
+  expand_limits(x=c(0,6))
+p
+```
+
+
+## SI figure 4 B bottom 
+
+```{r}
+phase.boundaries <- readRDS("./rds/phase.boundaries.rds")
+
+#phase.boundries.Bdiv_human <- phase.boundaries %>% filter(spp == 'bdiv_human')
+# manual bounds
+B.big.ph.bnd <- c(0, 2.5, 6.75, 8.25, 11.35, 12)
+B.bov.ph.bond <- c(0, 2.25, 7.5 , 8.25, 11.35, 12)
+B.div.cow.ph.bond <- c(0, 2.75, 7.15, 8.60, 11.35, 12)
+B.div.hum.ph.bond <- c(0, 2.25, 6.75, 8.60, 11.35 ,12)
+
+ph.trans <- list(B.big.ph.bnd, B.bov.ph.bond, B.div.cow.ph.bond, B.div.hum.ph.bond)
+names(ph.trans) <- c("bbig", "bbov", "bdiv_cow", "bdiv_human")
+
+ph.trans.df <- do.call("rbind", ph.trans)
+ph.trans.df <- ph.trans.df %>% data.frame() %>% rownames_to_column(var = "spp")
+colnames(ph.trans.df) <- c("spp", "trans1", "trans2", "trans3", "trans4", "trans5", "trans6")
+ph.trans.df <-  ph.trans.df %>%select(-c(trans1, trans6))
+ph.trans.df.lng <- ph.trans.df %>% pivot_longer(!spp, names_to = "trans", values_to = "x.intercept")
+
+
+
+p <- ggplot(phase.boundaries, aes(x=mean.peak, color = Phase)) +
+  geom_density(aes(color = Phase), size = 1.5) + 
+  scale_color_manual(values=c("G1" = "#1b5878", "S" = "#c44237", "M" = "#ad8842","C" = "#e99093"))+
+  theme_bw() +
+  facet_grid(spp~., scales = "free",  space='free',
+             labeller=label_wrap_gen(multi_line = TRUE)) +
+  geom_vline(data = ph.trans.df.lng,  aes(xintercept = x.intercept) ,
+             linetype="dashed", size = 0.8) +
+  scale_x_continuous(breaks = round(seq(min(phase.boundaries$t), 
+                                        max(phase.boundaries$t), by = 0.5),1)) +
+  theme(
+    plot.title = element_text(size=14, face = "bold.italic", color = 'red'),
+    legend.title = element_text(size = 10, face = "bold"), 
+    legend.text = element_text(size = 12, face = "bold"),
+    axis.text.x = element_text(size = 10, angle = 90, vjust = 0.45, color = "black"),  
+    axis.text.y = element_text(size = 10, color = "black"),
+    axis.title = element_text(size = 18, color = "black", face = "bold"),
+    strip.background = element_rect(fill = "white"), 
+    strip.text = element_text(color = "black", size = 16)
+  ) +
+  expand_limits(x=c(0,12))
+
+plot(p)
+
+```
+
+
+## SI figure 5A
+
+```{r}
+all.markers.sig <- readRDS("./rds/all.markers.sig.cell.cycle.phase_long_format.rds")
+all.markers.sig.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(num.deg = n()) 
+
+p <- ggplot(all.markers.sig.stat, aes(x=phase, y=num.deg, fill = phase, color = phase)) +
+  geom_bar(stat="identity",size = 2, width = 0.75, aes(fill = phase))+
+  scale_color_manual(values = c('G' = "#1b5878","SM" ="#c44237",'MC' = '#ad8842', 'C' = '#e99093'))+
+  scale_fill_manual(values = c('G' = "#758FA2","SM" = "#D4807F",'MC' = "#C3AE85", 'C' = "#EAADAF"))+
+  geom_text(aes(label=num.deg), vjust=1.15, color="black", size=5, fontface = 'bold')+
+  facet_grid(. ~ spp, scales = "free", space='free',labeller=label_wrap_gen(multi_line = TRUE))+
+  theme_bw()+
+  theme(
+    axis.text.x = element_blank(),
+    #axis.text.y = element_text(size = 10),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    axis.title.x = element_text(size = 14, face = "bold"),
+    axis.title.y = element_text(size = 14, face = "bold"))+
+  theme(strip.background=element_rect(fill='white', color = 'black'),
+        panel.spacing = unit(1.5, "lines"), 
+        strip.text.x=element_text(angle=0, hjust=0.5,vjust=0.5, size = 14,face = 'bold'),
+        plot.title = element_text(size=12, face = "bold.italic", color = 'black'),
+        axis.title.x = element_text(size=12, face="bold"),
+        axis.title.y = element_text(size=12, face="bold"))+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        #panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        strip.text = element_text(face = "bold", size = 14,  angle = 0), 
+        strip.placement = "outside") +
+  theme(legend.text = element_text(face = "bold", size = 10),
+        legend.title = element_text(face = "bold", size = 14))+
+  theme(panel.spacing = unit(1.5, "lines")) 
+#theme(legend.position = "none")
+
+p
+
+
+```
+
+
+
+## SI figure 5B
+```{r echo=FALSE}
+all.markers.sig <- readRDS("./rds/all.markers.sig.cell.cycle.phase_long_format.rds")
+all.markers.stat <- all.markers.sig %>% group_by(spp, phase) %>% summarise(genes = list(GeneID), total = n())
+
+all.markers.shared.stat <- all.markers.sig %>% 
+  group_by(spp, phase) %>% 
+  summarise(genes = list(GeneID), total = n()) %>% group_by(phase) %>% 
+  summarise(intersect = list(reduce(genes, intersect)), intersect.length = lengths(intersect)) 
+
+XX <- full_join(all.markers.stat, all.markers.shared.stat, by = "phase")
+XX.diff <- XX %>% rowwise() %>% 
+  mutate(spp.genes = list(setdiff(genes, intersect)), num.spp.genes = length(unlist(setdiff(genes, intersect))))
+
+spp.specific.markers <- XX.diff %>% select(spp, phase, spp.genes,num.spp.genes)
+
+spp.specific.markers$phase <- factor(spp.specific.markers$phase, levels = c('G', 'SM', 'MC', 'C'))
+
+p <-
+  ggplot(spp.specific.markers, aes(x=num.spp.genes, y=spp, fill = spp, color = spp)) +
+  geom_bar(stat="identity", size = 2, width = 0.75, aes(fill=spp)) +
+  scale_color_manual(values = c("Bbig" = "firebrick","Bbov" ="darkorchid3",
+                                'Bdiv_cow' = 'darkslateblue', 'Bdiv_human' = 'darkolivegreen4'))+
+  scale_fill_manual(values =c("Bbig" = "#E8B5B4","Bbov" ="#D09FE9",
+                              'Bdiv_cow' = "#BFB9D6", 'Bdiv_human' = "#CED5BD"))+
+  geom_text(aes(label=num.spp.genes), hjust= 1, color="black", size=4, fontface = 'bold')+
+  theme_bw()+
+  facet_grid(phase~., scales = "free", space='free',switch = "y",
+             labeller=label_wrap_gen(multi_line = TRUE)) +
+  theme(#axis.text.x = element_blank(),
+    axis.text.x = element_text(face="bold", color = "black", size=12, angle=0, hjust = 1),
+    axis.title.y = element_text(size=12, face="bold"),
+    axis.title.x = element_text(size=12, face="bold"),
+    #axis.text.y = element_text(face="bold", size=12, angle=0),
+    axis.text.y = element_blank())+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold", size = 14,  angle = 0),
+        strip.placement = "outside")+
+  theme(axis.line = element_line(color = 'black'),
+        axis.ticks = element_blank())+
+  theme(legend.text = element_text(face = "bold", size = 14),
+        legend.title = element_text(face = "bold", size = 14))+
+  theme(strip.text.y.left = element_text(angle = 0)) +
+  scale_x_continuous(expand = c(0,0))+
+  xlab("num.deg") + 
+  ylab("")
+
+p
+
+
+```
+
+## SI figure 5 C
+```{r echo = FALSE}
+
+all.markers.sig <- readRDS("./rds/all.markers.sig.cell.cycle.phase_long_format.rds")
+all.markers.shared.stat <- all.markers.sig %>% 
+  group_by(spp, phase) %>% 
+  summarise(genes = list(GeneID), total = n()) %>% group_by(phase) %>% 
+  summarise(intersect = list(reduce(genes, intersect)), intersect.length = lengths(intersect)) 
+
+all.markers.shared.stat$phase <- factor(all.markers.shared.stat$phase, levels = c('C', 'MC', 'SM', 'G'))
+p <-  ggplot(all.markers.shared.stat, aes(x=intersect.length, y=phase, fill = phase, color = phase)) +
+  geom_bar(stat="identity",  size = 2, width = 0.75, aes(fill = phase))+
+  scale_color_manual(values = c('G' = "#1b5878","SM" ="#c44237",
+                                'MC' = '#ad8842', 'C' = '#e99093'))+
+  scale_fill_manual(values = c('G' = "#758FA2","SM" = "#D4807F",
+                               'MC' = "#C3AE85", 'C' = "#EAADAF"))+
+  
+  geom_text(aes(label=intersect.length), hjust=1.15, color="black", size=12, fontface = 'bold')+
+  theme_bw()+
+  theme(axis.text.x = element_text(face="bold", size=30, color = "black",angle=0, hjust = 1),
+        axis.text.y = element_text(face="bold", size=30, color = "black", angle=0),
+        axis.title.y = element_text(size=28, face="bold"),
+        axis.title.x = element_text(size=28, face="bold"))+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"))+
+  theme(axis.line = element_line(color = 'black'), 
+        axis.ticks = element_blank())+
+  theme(legend.text = element_text(face = "bold", size = 18),
+        legend.title = element_text(face = "bold", size = 20))+
+  theme(legend.justification = "top")+ 
+  scale_x_continuous(expand = c(0,0))  +
+  xlab("num.deg")+ 
+  ylab("")
+p
+
+
+```
+
+
+## SI figure 5D
+
+```{r echo=FALSE}
+
+listforVenn <- readRDS("./rds/cell_cycle_markers_shared_across_speciies_Venn_diag.rds")
+
+ps <- lapply(1:length(clusters), function(i){
+  
+  venn <- Venn(listforVenn[[i]])
+  data <- process_data(venn)
+  
+  p <- ggplot() +
+    geom_sf(aes(fill = count), data = venn_region(data)) +
+    geom_sf(aes(color = id), data = venn_setedge(data), show.legend = FALSE) +
+    geom_sf_label(aes(label = count), data = venn_region(data),size =4,  alpha = 0.5) +
+    geom_sf_text(aes(label = name), color=c("bbig" = "firebrick","bbov" ="darkorchid3",
+                                            'bdiv_cow' = 'darkslateblue', 'bdiv_human' = 'darkolivegreen4'),
+                 fontface = "bold", size= 3,nudge_y = 0,nudge_x=0,
+                 data = venn_setlabel(data))+
+    geom_sf(color=c("bbig" = "firebrick","bbov" ="darkorchid3",
+                    'bdiv_cow' = 'darkslateblue', 'bdiv_human' = 'darkolivegreen4'), 
+            size = 1, data = venn_setedge(data), show.legend = FALSE) + 
+    theme_void()+ 
+    theme(legend.position = "none")+
+    theme(plot.margin=unit(c(0,0,0,0),"cm"))+
+    ggtitle(clusters[i])+
+    theme(plot.title = element_text(size = "22", face = "bold.italic"))
+  
+  
+})
+
+grid.arrange(ps[[1]], ps[[2]], ps[[3]], ps[[4]], ncol = 4)
+
+
+
+
+
+
+```
+
+## SII figure 6
+
+```{}
+
+
+```
+
+
+## SI figure 7
+
+```{r}
+spp.speciific.markers <- readRDS("./rds/species_specific_markers_lower_FC.rds")
+spp.speciific.markers$phase <- factor(spp.speciific.markers$phase, levels = c("G", "SM", "MC", "C"))
+
+
+p <-
+  ggplot(spp.speciific.markers, aes(x=num.deg, y=spp, fill = spp, color = spp)) +
+  geom_bar(stat="identity", size = 2, width = 0.75, aes(fill=spp)) +
+  scale_color_manual(values = c("Bbig" = "firebrick","Bbov" ="darkorchid3",
+                                'Bdiv_cow' = 'darkslateblue', 'Bdiv_human' = 'darkolivegreen4'))+
+  scale_fill_manual(values =c("Bbig" = "#E8B5B4","Bbov" ="#D09FE9",
+                              'Bdiv_cow' = "#BFB9D6", 'Bdiv_human' = "#CED5BD"))+
+  geom_text(aes(label=num.deg), hjust= 1, color="black", size=4, fontface = 'bold')+
+  theme_bw()+
+  facet_grid(phase~., scales = "free", space='free',switch = "y",
+             labeller=label_wrap_gen(multi_line = TRUE)) +
+  theme(#axis.text.x = element_blank(),
+    axis.text.x = element_text(face="bold", color = "black", size=12, angle=0, hjust = 1),
+    axis.title.y = element_text(size=12, face="bold"),
+    axis.title.x = element_text(size=12, face="bold"),
+    #axis.text.y = element_text(face="bold", size=12, angle=0),
+    axis.text.y = element_blank())+
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(),
+        panel.spacing = unit(0.5, "lines"),
+        strip.background = element_blank(),
+        strip.text = element_text(face = "bold", size = 14,  angle = 0),
+        strip.placement = "outside")+
+  theme(axis.line = element_line(color = 'black'),
+        axis.ticks = element_blank())+
+  theme(legend.text = element_text(face = "bold", size = 14),
+        legend.title = element_text(face = "bold", size = 14))+
+  theme(strip.text.y.left = element_text(angle = 0)) +
+  scale_x_continuous(expand = c(0,0))+
+  xlab("num.deg") + 
+  ylab("")
+
+p
+```
+
+## SI figure 8 A
+
+```{r}
+all.sc.tc.mus.scale.list  <- readRDS("./rds/conserved_markers.sc.tc.mus.scale.list.rds")
+
+p.list <-lapply(1:length(all.sc.tc.mus.scale.list), function(i){
+  
+  p <- ggplot(all.sc.tc.mus.scale.list[[i]], 
+              aes(x = aug.time, reorder(GeneID, -peak.ord), fill = y)) +
+    geom_tile() +
+    scale_x_discrete(expand=c(0,0)) +
+    ylab("Genes") + xlab("time/cells") +
+    facet_grid(. ~ spp , scales = 'free', space = 'free')+
+    scale_fill_gradientn(colours = viridis::inferno(10)) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      legend.position = "none")+
+    theme(strip.background=element_rect(fill='white', color = 'black'))+
+    theme(panel.spacing = unit(1.5, "lines")) +
+    theme(strip.text.x=element_text(angle=0, hjust=0.5,vjust=0.5, size = 18,face = 'bold'))+
+    theme(
+      plot.title = element_text(size=18, face = "bold.italic", color = 'black')
+    )
+  
+  p
+  
+  
+})
+
+pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 2)
+
+
+```
+
+
+## SI figure 8 B
+
+```{r e}
+all.sc.tc.mus.scale.list  <- readRDS("./rds/conserved_markers.sc.tc.mus.scale.list.rds")
+
+p.list <-lapply(1:length(all.sc.tc.mus.scale.list), function(i){
+  
+  p <- ggplot(all.sc.tc.mus.scale.list[[i]], 
+              aes(x = aug.time, reorder(GeneID, -bdiv_peak.ord), fill = y)) +
+    geom_tile() +
+    scale_x_discrete(expand=c(0,0)) +
+    ylab("Genes") + xlab("time/cells") +
+    facet_grid(. ~ spp , scales = 'free', space = 'free')+
+    scale_fill_gradientn(colours = viridis::inferno(10)) +
+    theme(
+      axis.text.x = element_blank(),
+      axis.text.y = element_blank(),
+      axis.ticks = element_blank(),
+      axis.title.x = element_blank(),
+      axis.title.y = element_blank(),
+      legend.position = "none")+
+    theme(strip.background=element_rect(fill='white', color = 'black'))+
+    theme(panel.spacing = unit(1.5, "lines")) +
+    theme(strip.text.x=element_text(angle=0, hjust=0.5,vjust=0.5, size = 18,face = 'bold'))+
+    theme(
+      plot.title = element_text(size=18, face = "bold.italic", color = 'black')
+    )
+  
+  p
+  
+  
+})
+
+pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 2)
+
+```
+
+
+## SI figure 9
+```{}
+
+
+```
+
+
+
+
+## SI fig 10
+
+```{r}
+sc.tc.mus.long.all <- read.xlsx("./rds/all_AP2s_TFs_regulators_dtw_clusters.xlsx")
+
+df.plot  <- sc.tc.mus.long.all
+df.plot$GeneID <- gsub("Bdiv_", "", df.plot$GeneID)
+
+cluster.dtw <- paste("cluster", 1:4, sep = " ")
+p <- lapply(unique(df.plot$cluster), function(i){
+  tmp <- df.plot %>% dplyr::filter(cluster == i)
+  ggplot(tmp, aes(x = t, y = y, color = GeneID)) + 
+    facet_grid(spp ~ .)+
+    geom_line(size = 0.5) + 
+    theme_bw() +
+    ggtitle(cluster.dtw[i]) +
+    theme(strip.background = element_rect(fill = "white", colour = "black"), 
+          # strip.text = element_blank(),
+          #strip.text = element_text(size = 26, face = "bold"),
+          strip.text.y  = element_text(size = 10, face = 'bold',  color = "black"),
+          plot.title = element_text(size = 10, face = "bold.italic", hjust = 0.5), 
+          axis.title.x = element_text(size = 10, face = "bold", color = "black"),
+          #axis.title.x = element_blank(), 
+          axis.title.y = element_text(size = 10, face = "bold", color = "black"),
+          legend.title = element_text(size = 12, face = "bold"),
+          legend.text = element_text(size = 12, face = "bold"),
+          #axis.ticks.x = element_blank(), 
+          axis.text.y = element_text(size = 7, face = "bold", color = "black"),
+          axis.text.x = element_text(size = 10, face = "bold", color = "black",  angle = 90),
+          #legend.margin=margin(0,0,0,0),
+          panel.spacing = unit(0.5, "lines"))+
+    ylab("expr") + xlab("time") 
+  
+  
+})
+
+p2 <- do.call(grid.arrange, c(p, nrow=2))
+
+df <- sc.tc.mus.long.all %>% select(GeneID, cluster, spp) %>%
+  distinct(GeneID, spp, cluster) %>% mutate(is.present = "yes") 
+df$cluster <- paste("cluster", df$cluster,  sep  = " ")
+
+df.wide <- df %>% pivot_wider(names_from = spp, values_from = is.present)
+df.wide[is.na(df.wide)] <- "no"
+df.lng <- df.wide %>% pivot_longer(-c(GeneID, cluster), names_to = "spp", values_to = "is.present")
+df.lng$spp <- factor(df.lng$spp, levels = c("bbig", "bbov", "bdiv_cow", "bdiv_human"))
+df.lng$cluster <- factor(df.lng$cluster, levels = paste("cluster", c(1:4), sep = " "))
+df.lng$GeneID <- gsub("Bdiv_", "", df.lng$GeneID )
+
+
+
+pp <- ggplot(df.lng, aes(x =  spp, y = GeneID, fill = is.present)) + 
+  geom_tile(aes(fill = is.present), colour = "black") + 
+  facet_grid( cluster ~ .  , scales = 'free', space = 'free') + 
+  scale_fill_manual(values = c(yes = "darkseagreen", no = "white")) + 
+  theme_bw()+
+  theme(axis.title.y = element_blank(),
+        axis.title.x = element_blank(), 
+        axis.ticks.x  = element_blank(),
+        axis.text.x = element_text(size = 10, face = "bold", angle = 45, hjust = 1, colour = "black"), 
+        axis.text.y = element_text(size = 10, face = "bold", color = "black"), 
+        legend.position = "none", 
+        strip.text = element_text(size = 12, face = "bold"), 
+        strip.background = element_rect(fill = "white", color = "black"))
+
+pp
+
+```
+
