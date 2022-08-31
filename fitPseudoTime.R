@@ -32,7 +32,6 @@ all.samples.integrated <- processeMergedS.O(S.O.list, file.info, data.ind, ref.i
 all.samples.integrated@meta.data$spp <- factor(all.samples.integrated@meta.data$spp, 
                                                levels = unique(all.samples.integrated@meta.data$spp))
 
-saveRDS(all.samples.integrated, './Input/all.samples.integrated.rds')
 
 p <- DimPlot(all.samples.integrated, reduction = "pca", 
              #group.by = "cells", 
@@ -241,13 +240,9 @@ saveRDS(L2, './Input/all_pstime_fits_L2.rds')
 
 
 cell_cycle_genes_df <- lapply(L1, `[[`, 1)
-saveRDS(cell_cycle_genes_df, '../Input/compScBabesia/rds_rev2/all_cell_cycle_genes_df.rds')
-
 cell_cycle_genes_df_adj <- lapply(L2, `[[`, 8)
-saveRDS(cell_cycle_genes_df_adj, '../Input/compScBabesia/rds_rev2/all_cell_cycle_genes_df_adj.rds')
-
 sc.tc.df.adj <- lapply(L2, `[[`, 10)
-saveRDS(sc.tc.df.adj, './Input/all_sc_tc_df_adj.rds')
+
 
 
 #### No Rerun above
@@ -285,9 +280,6 @@ plot(p)
 
 
 
-#LabelClusters(plot = p1, id = 'adj.time.idx', size = 7, repel = T, color = 'black')
-
-
 ## Generate gam genes S.O update an apply network smoothing on common genes
 gam.genes <- lapply(L1, function(L){
   gam.genes <- L$gam.genes
@@ -302,12 +294,10 @@ S.O.integrated.list.update.orth <- lapply(1:length(L2), function(i){
 })
 
 names(S.O.integrated.list.update.orth) <- names(S.O.list)[1:4]
-saveRDS(S.O.integrated.list.update.orth, '../Input/compScBabesia/rds_rev2/S.O.integrated.list.pstime.GAM.intersect.rds')
 
 S.O.integrated.list.update <- lapply(L2, `[[`, 1)
 
 names(S.O.integrated.list.update) <- names(S.O.list)[1:4]
-saveRDS(S.O.integrated.list.update, './Input/S.O.integrated.list.pstime.rds')
 
 
 S.O.integrated.list.update.orth.indiv <- lapply(1:length(L2), function(i){
@@ -317,7 +307,6 @@ S.O.integrated.list.update.orth.indiv <- lapply(1:length(L2), function(i){
 })
 
 names(S.O.integrated.list.update.orth.indiv) <- names(S.O.list)[1:4]
-saveRDS(S.O.integrated.list.update.orth.indiv, './Input/S.O.integrated.list.pstime.GAM.indiv.rds')
 
 
 
