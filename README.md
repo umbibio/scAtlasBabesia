@@ -6,7 +6,7 @@
 
 * Single-Cell RNA-seq data processing
 * Pseudo-time analysis
-* Fitting gene curves(smoothing - splines)
+* Fitting gene curves(smoothing splines)
 * Marker analysis
 * Time-course clustering
 
