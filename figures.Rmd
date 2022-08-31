@@ -235,7 +235,7 @@ plot(p1)
 
 ```
 
-## fig 2c
+## fig 2C
 
 ```{r echo=FALSE}
 bdiv_human_meta_data <- readRDS("./rds/Bdiv_human_pca_fitter_curv_start_point.rds")
@@ -264,12 +264,6 @@ plot(p)
 
 ```
 
-
-## Figure 3
-
-```{r echo=FALSE}
-
-```
 
 
 
@@ -334,7 +328,6 @@ p
 
 ## Figure 4B
 
-
 ```{r}
 
 markers.sig <- readRDS('./rds/all.markers.sig.cell.cycle.phase.rds')
@@ -390,7 +383,7 @@ plot(p)
 ```
 
 
-## Figure 4c
+## Figure 4C
 
 ```{r}
 cons.markers.phases.sig.cc <- readRDS("./rds/conserved_markers_cross_spp_phase_based.rds")
@@ -428,7 +421,7 @@ p
 
 ```
 
-## Fiigure 4D
+## Figure 4D
 
 ```{r echo=FALSE}
 spp.markers <- readRDS("./rds/species_specific_sig_markers_phase_based_stat.rds")
@@ -508,7 +501,7 @@ p <- grid.arrange(ps[[1]], ps[[2]], ps[[3]], ps[[4]], ncol = 4)
 
 ```
 
-## Figure 6 A
+## Figure 6A
 
 ```{r}
 
@@ -599,7 +592,7 @@ p2 <- grid.arrange(pp[[2]], pp[[1]], ncol = 1)
 
 ```
 
-## Figure 6 B
+## Figure 6B
 
 ```{r}
 host.markers.int.local.sig.specific.filt <- readRDS("./rds/human_vs_cow.rds")
@@ -701,18 +694,6 @@ p2 <- grid.arrange(pp[[2]], pp[[1]], nrow = 2)
 ```
 
 
-
-
-
-
-
-## Figure 7A
-```{r}
-
-```
-
-
-
 ## figure 7B
 
 
@@ -751,14 +732,7 @@ p <- lapply(unique(top.10.cons$cluster), function(i){
 p2 <- do.call(grid.arrange, c(p, nrow=2))
 
 
-```
 
-## Fiigure 7C
-
-```{r}
-
-
-```
 
 ## Figure 8
 
@@ -834,54 +808,6 @@ pp
 ```
 
 
-## downsampled vs Not-downsampled (revision)
-
-```{r}
-
-S.O.downSamp <- readRDS("./rds/S.O.integrated.list.pstime.GAM.indiv.cell.cycle.phase.rds")
-p.list <- list()
-p.list <- lapply(1:length(S.O.downSamp), function(i){
-  
-  Idents(S.O.downSamp[[i]]) <- "cell.cycle.phase"
-  S.O.downSamp[[i]]$cell.cycle.phase <- factor(S.O.downSamp[[i]]$cell.cycle.phase,
-                                              levels = c('G', 'SM', 'MC', 'C'))
-  p.list <- DimPlot(S.O.downSamp[[i]], reduction = "pca", 
-                    pt.size = 1,
-                    cols = c(G = "#1b5878", SM = "#c44237", MC = "#ad8842", C = "#e99093" ),
-                    shape.by='spp',
-                    label = TRUE, label.size = 8) + NoLegend() + NoAxes()
-  
-})
-
-pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
-
-```
-
-
-
-```{r}
-
-S.Os.no.downSamp<- readRDS("./rds/S.O.integrated.list.pstime.GAM.indiv.cycle.phase.notDownSampled.rds")
-
-p.list <- list()
-p.list <- lapply(1:length(S.Os.no.downSamp), function(i){
-  
-  Idents(S.Os.no.downSamp[[i]]) <- "cell.cycle.phase"
-  S.Os.no.downSamp[[i]]$cell.cycle.phase <- factor(S.Os.no.downSamp[[i]]$cell.cycle.phase,
-                                              levels = c('G', 'SM', 'MC', 'C'))
-  p.list <- DimPlot(S.Os.no.downSamp[[i]], reduction = "pca", 
-                    pt.size = 1,
-                    cols = c(G = "#1b5878", SM = "#c44237", MC = "#ad8842", C = "#e99093" ),
-                    shape.by='spp',
-                    label = TRUE, label.size = 8) + NoLegend() + NoAxes()
-  
-})
-
-pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
-
-
-```
-
 
 
 ## SI figure 3 top panel
@@ -932,7 +858,7 @@ pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
 
 
 
-## SI figure 4 A
+## SI figure 4A
 
 ```{r}
 tg.sc.tc.mus.scale <- readRDS('./rds/atoxo.markers.heatmap.rds')
@@ -967,7 +893,7 @@ p
 ```
 
 
-## SI figure 4 B top panel (T.gondii)
+## SI figure 4B top panel (T.gondii)
 ```{r}
 
 toxo.phase.boundaries <- readRDS("./rds/phase.boundaries_top_toxo_markers.rds")
@@ -997,7 +923,7 @@ p
 ```
 
 
-## SI figure 4 B bottom 
+## SI figure 4B bottom 
 
 ```{r}
 phase.boundaries <- readRDS("./rds/phase.boundaries.rds")
@@ -1147,7 +1073,7 @@ p
 
 ```
 
-## SI figure 5 C
+## SI figure 5C
 ```{r echo = FALSE}
 
 all.markers.sig <- readRDS("./rds/all.markers.sig.cell.cycle.phase_long_format.rds")
@@ -1222,17 +1148,6 @@ ps <- lapply(1:length(clusters), function(i){
 grid.arrange(ps[[1]], ps[[2]], ps[[3]], ps[[4]], ncol = 4)
 
 
-
-
-
-
-```
-
-## SII figure 6
-
-```{}
-
-
 ```
 
 
@@ -1277,9 +1192,10 @@ p <-
   ylab("")
 
 p
+
 ```
 
-## SI figure 8 A
+## SI figure 8A
 
 ```{r}
 all.sc.tc.mus.scale.list  <- readRDS("./rds/conserved_markers.sc.tc.mus.scale.list.rds")
@@ -1318,7 +1234,7 @@ pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 2)
 ```
 
 
-## SI figure 8 B
+## SI figure 8B
 
 ```{r e}
 all.sc.tc.mus.scale.list  <- readRDS("./rds/conserved_markers.sc.tc.mus.scale.list.rds")
@@ -1356,16 +1272,7 @@ pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 2)
 ```
 
 
-## SI figure 9
-```{}
-
-
-```
-
-
-
-
-## SI fig 10
+## SI figure 10
 
 ```{r}
 sc.tc.mus.long.all <- read.xlsx("./rds/all_AP2s_TFs_regulators_dtw_clusters.xlsx")
