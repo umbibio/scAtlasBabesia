@@ -46,7 +46,6 @@ sc.spline.fits <- lapply(sc.tc.df.adj, function(df){
   return(spline.fits)
 })
 
-saveRDS(sc.spline.fits, './Input/bd_spline_fits_sc_tc_20min.rds')
 
 ## Sychrnonized bulk reads
 genes <- unique(sync.tc.df$variable)
@@ -70,6 +69,5 @@ sync.spline.fits <- mclapply(1:length(genes), function(i){
   return(mu)
 }, mc.cores = num.cores)
 
-saveRDS(sync,spline.fits, './Input/all_spline_fits_sc_tc_20min.rds')
 
 
