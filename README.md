@@ -17,6 +17,6 @@ git clone https://github.com/umbibio/scBabesiaAtlases.git
 
 
 ### Data availability
-The processed data is is available here and can be used to run the analysis pipeline smoothly and generate the figures in the paper. We suggest that you save the rds folder within the same directory where the code is cloned. Alternatively, change the relative path in the code.
+The processed data is is available [https://umbibio.math.umb.edu/data/babesia/] and can be used to run the analysis pipeline smoothly and generate the figures in the paper. We suggest that you save the rds folder within the same directory where the code is cloned. Alternatively, change the relative path in the code.
 
 
