@@ -915,7 +915,7 @@ p2 <- grid.arrange(pp[[2]], pp[[1]], nrow = 2)
 
 
 ## figure 7
-## Please check the web application for the network figure 7C.
+## Please check the web application (https://umbibio.math.umb.edu/babesiasc/) for the network figure 7C.
 
 
 ```{r echo=FALSE}
@@ -957,7 +957,7 @@ p2 <- do.call(grid.arrange, c(p, nrow=1))
 
 
 ## Figure 8 A
-## Please check weeb application for the neetwork figure 8C.
+## Please check web application (https://umbibio.math.umb.edu/babesiasc/) for the network figure 8C.
 
 ```{r}
 
@@ -1242,7 +1242,7 @@ pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 4)
 
 
 
-## SI figure 4 A
+## SI figure 4A
 
 ```{r}
 tg.sc.tc.mus.scale <- readRDS('./rds/atoxo.markers.heatmap.rds')
@@ -1277,7 +1277,7 @@ p
 ```
 
 
-## SI figure 4 B top panel (T.gondii)
+## SI figure 4B top panel (T.gondii)
 ```{r}
 
 toxo.phase.boundaries <- readRDS("./rds/phase.boundaries_top_toxo_markers.rds")
@@ -1307,7 +1307,7 @@ p
 ```
 
 
-## SI figure 4 B bottom 
+## SI figure 4B bottom 
 
 ```{r}
 phase.boundaries <- readRDS("./rds/phase.boundaries.rds")
@@ -1457,7 +1457,7 @@ p
 
 ```
 
-## SI figure 5 C
+## SI figure 5C
 ```{r echo = FALSE}
 
 all.markers.sig <- readRDS("./rds/all.markers.sig.cell.cycle.phase_long_format.rds")
@@ -1698,9 +1698,11 @@ pp <- grid.arrange(p.list[[1]], p.list[[2]], p.list[[3]], p.list[[4]], ncol = 2)
 
 ```
 
+## SI figure 9
+## Please check the web application (https://umbibio.math.umb.edu/babesiasc/) for the expression of genes.
 
 
-## SI fig 10
+## SI figure 10
 
 ```{r}
 sc.tc.mus.long.all <- read.xlsx("./rds/all_AP2s_TFs_regulators_dtw_clusters.xlsx")
@@ -1771,11 +1773,11 @@ pp
 
 
 ## Figure SI 11
-## Please check the expression of PKG on web application. 
+## Please check the expression of PKG on web application (https://umbibio.math.umb.edu/babesiasc/). 
 
 
 ## Figure SI 12 
-## Please check the expression of Vesa genes on web application.
+## Please check the expression of Vesa genes on web application (https://umbibio.math.umb.edu/babesiasc/).
 
 
 
